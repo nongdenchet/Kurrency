@@ -1,6 +1,10 @@
 package com.rain.currency.ui
 
-class ConverterReducer {
+import com.rain.currency.di.activity.ActivityScope
+import javax.inject.Inject
+
+@ActivityScope
+class ConverterReducer @Inject constructor() {
     fun changeBase(prev: ConverterState, value: String): ConverterState {
         prev.data?.let {
             convertBase(value, it.currency.baseUnit, it)?.let {

@@ -32,8 +32,10 @@ dependencies {
     implementation 'com.facebook.fresco:fresco:1.8.0'
 
     // Dagger
+    implementation 'com.google.dagger:dagger:2.14.1'
     implementation 'com.google.dagger:dagger-android:2.14.1'
     implementation 'com.google.dagger:dagger-android-support:2.14.1'
+    kapt 'com.google.dagger:dagger-compiler:2.14.1'
     kapt 'com.google.dagger:dagger-android-processor:2.14.1'
 
     // Rx

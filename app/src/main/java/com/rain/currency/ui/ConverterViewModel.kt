@@ -2,12 +2,15 @@ package com.rain.currency.ui
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.rain.currency.data.repo.CurrencyRepo
+import com.rain.currency.di.activity.ActivityScope
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import javax.inject.Inject
 
-class ConverterViewModel(private val currencyRepo: CurrencyRepo, private val reducer: ConverterReducer) {
+@ActivityScope
+class ConverterViewModel @Inject constructor(private val currencyRepo: CurrencyRepo, private val reducer: ConverterReducer) {
     private val state = BehaviorRelay.createDefault(ConverterState.INIT_STATE)
     private val disposables = CompositeDisposable()
 
