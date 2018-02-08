@@ -7,7 +7,9 @@ import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.repo.CurrencyRepo
 import io.reactivex.Observable
 import io.reactivex.Single
+import junit.framework.Assert.assertEquals
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -18,7 +20,7 @@ class ConverterViewModelTest {
     private val baseUnitChange = PublishRelay.create<Int>()
     private val targetUnitChange = PublishRelay.create<Int>()
 
-    class CurrencyRepoFake : CurrencyRepo() {
+    class CurrencyRepoStub : CurrencyRepo() {
         override fun fetchExchange(): Single<Exchange> {
             val currencies = ArrayMap<String, Double>()
             currencies["USD"] = 1.0
@@ -37,12 +39,31 @@ class ConverterViewModelTest {
 
     @Before
     fun setUp() {
-        converterViewModel = ConverterViewModel(CurrencyRepoFake(), ConverterReducer())
+        converterViewModel = ConverterViewModel(CurrencyRepoStub(), ConverterReducer())
     }
 
-    private fun bind(): ConverterViewModel.Output {
-        return converterViewModel.bind(ConverterViewModel.Input(Observable.just(1),
+    private fun bind(trigger: Observable<Any> = Observable.just(1)): ConverterViewModel.Output {
+        return converterViewModel.bind(ConverterViewModel.Input(trigger,
                 baseChange, targetChange, baseUnitChange, targetUnitChange))
+    }
+
+    @Test
+    fun shouldEmitSpinnerData() {
+        val output = bind()
+        val viewModel = output.spinnerViewModel.test().values()[0]
+        assertArrayEquals(arrayOf("USD", "VND"), viewModel.units)
+        assertEquals(0, viewModel.baseIndex)
+        assertEquals(1, viewModel.targetIndex)
+    }
+
+    @Test
+    fun shouldEmitLoading() {
+        val trigger = PublishRelay.create<Int>()
+        val output = bind(trigger.map {})
+        val observer = output.loading.test()
+        trigger.accept(1)
+
+        observer.assertValues(true, false)
     }
 
     @Test
