@@ -15,8 +15,13 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            buildConfigField "String", "ACCESS_TOKEN", AccessToken
+        }
+
         release {
             minifyEnabled false
+            buildConfigField "String", "ACCESS_TOKEN", AccessToken
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -30,6 +35,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.facebook.fresco:fresco:1.8.0'
+    implementation 'com.jakewharton.timber:timber:4.6.0'
 
     // Dagger
     implementation 'com.google.dagger:dagger:2.14.1'

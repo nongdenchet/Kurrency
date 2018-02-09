@@ -7,6 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import timber.log.Timber
 import javax.inject.Inject
 
 @ActivityScope
@@ -41,19 +42,19 @@ class ConverterViewModel @Inject constructor(private val currencyRepo: CurrencyR
                 .flatMapSingle { fetchCurrency() }
                 .map { ConverterState(data = it, loading = false) }
                 .startWith(ConverterState(loading = true))
-                .subscribe({ emitState(it) }))
+                .subscribe({ emitState(it) }, Timber::e))
         disposables.add(input.baseChange
                 .map { reducer.changeBase(state.value, it) }
-                .subscribe({ emitState(it) }))
+                .subscribe({ emitState(it) }, Timber::e))
         disposables.add(input.targetChange
                 .map { reducer.changeTarget(state.value, it) }
-                .subscribe({ emitState(it) }))
+                .subscribe({ emitState(it) }, Timber::e))
         disposables.add(input.baseUnitChange
                 .map { reducer.changeBaseUnit(state.value, it) }
-                .subscribe({ emitState(it) }))
+                .subscribe({ emitState(it) }, Timber::e))
         disposables.add(input.targetUnitChange
                 .map { reducer.changeTargetUnit(state.value, it) }
-                .subscribe({ emitState(it) }))
+                .subscribe({ emitState(it) }, Timber::e))
 
         return configureOutput()
     }

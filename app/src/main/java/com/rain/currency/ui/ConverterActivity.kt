@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_converter.edtTarget
 import kotlinx.android.synthetic.main.activity_converter.pbLoading
 import kotlinx.android.synthetic.main.activity_converter.spBase
 import kotlinx.android.synthetic.main.activity_converter.spTarget
+import timber.log.Timber
 import javax.inject.Inject
 
 class ConverterActivity : AppCompatActivity() {
@@ -56,16 +57,16 @@ class ConverterActivity : AppCompatActivity() {
 
         disposables.add(output.baseResult
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { setText(edtBase, it) })
+                .subscribe({ setText(edtBase, it) }, Timber::e))
         disposables.add(output.targetResult
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { setText(edtTarget, it) })
+                .subscribe({ setText(edtTarget, it) }, Timber::e))
         disposables.add(output.spinnerViewModel
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { bindUnits(it) })
+                .subscribe({ bindUnits(it) }, Timber::e))
         disposables.addAll(output.loading
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { bindLoading(it) })
+                .subscribe({ bindLoading(it) }, Timber::e))
     }
 
     private fun bindLoading(loading: Boolean) {

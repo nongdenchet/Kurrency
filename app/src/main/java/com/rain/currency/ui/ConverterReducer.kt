@@ -50,10 +50,11 @@ class ConverterReducer @Inject constructor() {
         exchange.currencies[unit]?.let { targetPrice ->
             exchange.currencies[currency.baseUnit]?.let { basePrice ->
                 val result = (value.toDoubleOrNull() ?: -1.0) * targetPrice / basePrice
-                val newCurrency = if (result >= 0)
-                    currency.copy(base = String.format("%.4f", result), target = value, targetUnit = unit)
-                else
-                    currency.copy(base = "", target = value, targetUnit = unit)
+                val newCurrency = when {
+                    result > 0 -> currency.copy(base = String.format("%.4f", result), target = value, targetUnit = unit)
+                    result == 0.0 -> currency.copy(base = "0", target = value, targetUnit = unit)
+                    else -> currency.copy(base = "", target = value, targetUnit = unit)
+                }
 
                 return ConverterState.Data(exchange, newCurrency)
             }
@@ -69,10 +70,11 @@ class ConverterReducer @Inject constructor() {
         exchange.currencies[unit]?.let { basePrice ->
             exchange.currencies[currency.targetUnit]?.let { targetPrice ->
                 val result = (value.toDoubleOrNull() ?: -1.0) * basePrice / targetPrice
-                val newCurrency = if (result >= 0)
-                    currency.copy(base = value, target = String.format("%.4f", result), baseUnit = unit)
-                else
-                    currency.copy(base = value, target = "", baseUnit = unit)
+                val newCurrency = when {
+                    result > 0 -> currency.copy(base = value, target = String.format("%.4f", result), baseUnit = unit)
+                    result == 0.0 -> currency.copy(base = value, target = "0", baseUnit = unit)
+                    else -> currency.copy(base = value, target = "", baseUnit = unit)
+                }
 
                 return ConverterState.Data(exchange, newCurrency)
             }

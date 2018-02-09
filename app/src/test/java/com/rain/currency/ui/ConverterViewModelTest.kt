@@ -4,6 +4,7 @@ import android.support.v4.util.ArrayMap
 import com.jakewharton.rxrelay2.PublishRelay
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange
+import com.rain.currency.data.network.CurrencyApi
 import com.rain.currency.data.repo.CurrencyRepo
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -12,6 +13,8 @@ import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
+import java.util.Date
 
 class ConverterViewModelTest {
     private lateinit var converterViewModel: ConverterViewModel
@@ -20,14 +23,14 @@ class ConverterViewModelTest {
     private val baseUnitChange = PublishRelay.create<Int>()
     private val targetUnitChange = PublishRelay.create<Int>()
 
-    class CurrencyRepoStub : CurrencyRepo() {
+    class CurrencyRepoStub : CurrencyRepo(mock(CurrencyApi::class.java)) {
         override fun fetchExchange(): Single<Exchange> {
             val currencies = ArrayMap<String, Double>()
             currencies["USD"] = 1.0
             currencies["VND"] = 1.0 / 20000
 
             return Single.fromCallable {
-                return@fromCallable Exchange("USD", currencies)
+                return@fromCallable Exchange("USD", Date(System.currentTimeMillis()), currencies)
             }
         }
 
@@ -69,8 +72,8 @@ class ConverterViewModelTest {
     @Test
     fun shouldEmitInitState() {
         val output = bind()
-        output.baseResult.test().assertValue("0.0000")
-        output.targetResult.test().assertValue("0.0000")
+        output.baseResult.test().assertValue("0")
+        output.targetResult.test().assertValue("0")
     }
 
     @Test
@@ -111,7 +114,7 @@ class ConverterViewModelTest {
         baseChange.accept("hello")
         baseChange.accept("-200")
         baseChange.accept("0.1")
-        observer.assertValues("0.0000", "20000.0000", "", "2000.0000")
+        observer.assertValues("0", "20000.0000", "", "2000.0000")
     }
 
     @Test
@@ -122,7 +125,7 @@ class ConverterViewModelTest {
         targetChange.accept("hello")
         targetChange.accept("-200")
         targetChange.accept("10000")
-        observer.assertValues("0.0000", "0.0500", "", "0.5000")
+        observer.assertValues("0", "0.0500", "", "0.5000")
     }
 
     @After
