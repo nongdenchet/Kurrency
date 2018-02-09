@@ -1,6 +1,7 @@
 package com.rain.currency.data.repo
 
 import android.support.v4.util.ArrayMap
+import com.rain.currency.data.local.UserCurrencyStore
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.network.CurrencyApi
@@ -12,12 +13,19 @@ import java.util.Date
 import javax.inject.Inject
 
 @ApplicationScope
-open class CurrencyRepo @Inject constructor(private val currencyApi: CurrencyApi) {
+open class CurrencyRepo @Inject constructor(
+        private val currencyApi: CurrencyApi,
+        private val userCurrencyStore: UserCurrencyStore
+) {
 
     open fun fetchExchange(): Single<Exchange> {
         return currencyApi.getLiveCurrency()
                 .map { toExchange(it) }
                 .subscribeOn(Schedulers.io())
+    }
+
+    open fun storeUserCurrencies(baseUnit: String, targetUnit: String) {
+        userCurrencyStore.storeCurrencies(baseUnit, targetUnit)
     }
 
     private fun toExchange(liveCurrency: LiveCurrency): Exchange {
@@ -30,7 +38,7 @@ open class CurrencyRepo @Inject constructor(private val currencyApi: CurrencyApi
     }
 
     open fun fetchLastCurrency(): Single<Currency> {
-        return Single.just(Pair("SGD", "VND"))
+        return Single.just(userCurrencyStore.getCurrencies())
                 .map { Currency(baseUnit = it.first, targetUnit = it.second) }
     }
 }

@@ -2,6 +2,7 @@ package com.rain.currency.ui
 
 import android.support.v4.util.ArrayMap
 import com.jakewharton.rxrelay2.PublishRelay
+import com.rain.currency.data.local.UserCurrencyStore
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.network.CurrencyApi
@@ -9,11 +10,11 @@ import com.rain.currency.data.repo.CurrencyRepo
 import io.reactivex.Observable
 import io.reactivex.Single
 import junit.framework.Assert.assertEquals
-import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import java.util.Date
 
 class ConverterViewModelTest {
@@ -22,8 +23,10 @@ class ConverterViewModelTest {
     private val targetChange = PublishRelay.create<String>()
     private val baseUnitChange = PublishRelay.create<Int>()
     private val targetUnitChange = PublishRelay.create<Int>()
+    private val userCurrencyStore = mock(UserCurrencyStore::class.java)
 
-    class CurrencyRepoStub : CurrencyRepo(mock(CurrencyApi::class.java)) {
+    class CurrencyRepoStub constructor(userCurrencyStore: UserCurrencyStore)
+        : CurrencyRepo(mock(CurrencyApi::class.java), userCurrencyStore) {
         override fun fetchExchange(): Single<Exchange> {
             val currencies = ArrayMap<String, Double>()
             currencies["USD"] = 1.0
@@ -42,7 +45,7 @@ class ConverterViewModelTest {
 
     @Before
     fun setUp() {
-        converterViewModel = ConverterViewModel(CurrencyRepoStub(), ConverterReducer())
+        converterViewModel = ConverterViewModel(CurrencyRepoStub(userCurrencyStore), ConverterReducer())
     }
 
     private fun bind(trigger: Observable<Any> = Observable.just(1)): ConverterViewModel.Output {
@@ -128,8 +131,10 @@ class ConverterViewModelTest {
         observer.assertValues("0", "0.0500", "", "0.5000")
     }
 
-    @After
-    fun tearDown() {
+    @Test
+    fun shouldStoreUserCurrency() {
+        bind()
         converterViewModel.unbind()
+        verify(userCurrencyStore).storeCurrencies("USD", "VND")
     }
 }

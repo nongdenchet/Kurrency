@@ -11,7 +11,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @ActivityScope
-class ConverterViewModel @Inject constructor(private val currencyRepo: CurrencyRepo, private val reducer: ConverterReducer) {
+class ConverterViewModel @Inject constructor(
+        private val currencyRepo: CurrencyRepo,
+        private val reducer: ConverterReducer
+) {
     private val state = BehaviorRelay.createDefault(ConverterState.INIT_STATE)
     private val disposables = CompositeDisposable()
 
@@ -92,6 +95,12 @@ class ConverterViewModel @Inject constructor(private val currencyRepo: CurrencyR
     }
 
     fun unbind() {
+        state.value.data?.let {
+            currencyRepo.storeUserCurrencies(
+                    it.currency.baseUnit,
+                    it.currency.targetUnit
+            )
+        }
         disposables.dispose()
     }
 }
