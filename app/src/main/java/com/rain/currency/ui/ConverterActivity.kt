@@ -48,8 +48,8 @@ class ConverterActivity : AppCompatActivity() {
     private fun bindViewModel() {
         val input = ConverterViewModel.Input(
                 Observable.just(1),
-                getStreamText(edtBase, window),
-                getStreamText(edtTarget, window),
+                getStreamText(edtBase),
+                getStreamText(edtTarget),
                 getStreamSelection(spBase),
                 getStreamSelection(spTarget)
         )

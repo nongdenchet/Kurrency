@@ -2,17 +2,21 @@
 <RelativeLayout
     android:id="@+id/test"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:padding="16dp">
+    android:background="@android:color/transparent">
 
     <LinearLayout
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:orientation="vertical">
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:id="@+id/baseContainer"
@@ -22,7 +26,7 @@
 
             <EditText
                 android:id="@+id/edtBase"
-                android:layout_width="180dp"
+                android:layout_width="156dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="numberDecimal" />
@@ -42,7 +46,7 @@
 
             <EditText
                 android:id="@+id/edtTarget"
-                android:layout_width="180dp"
+                android:layout_width="156dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="numberDecimal" />
@@ -55,9 +59,18 @@
         </LinearLayout>
     </LinearLayout>
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/btnMoney"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_money"
+        app:civ_fill_color="@color/colorPrimary" />
+
     <ProgressBar
         android:id="@+id/pbLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 </RelativeLayout>
