@@ -8,7 +8,10 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
+import timber.log.Timber
 import javax.inject.Inject
+
+
 
 class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
 
@@ -27,6 +30,7 @@ class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.plant(Timber.DebugTree())
         DaggerAppComponent.builder()
                 .application(this)
                 .build()

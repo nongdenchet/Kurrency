@@ -56,7 +56,7 @@ class ConverterViewModelTest {
     @Test
     fun shouldEmitSpinnerData() {
         val output = bind()
-        val viewModel = output.converterConfigurations.test().values()[0]
+        val viewModel = output.converterConfiguration.test().values()[0]
         assertArrayEquals(arrayOf("USD", "VND"), viewModel.units)
         assertEquals(0, viewModel.baseIndex)
         assertEquals(1, viewModel.targetIndex)
@@ -83,14 +83,14 @@ class ConverterViewModelTest {
     fun shouldEmitNewTarget() {
         val output = bind()
         baseChange.accept("1")
-        output.targetResult.test().assertValue("20000.0000")
+        output.targetResult.test().assertValue("20000.00")
     }
 
     @Test
     fun shouldEmitNewBase() {
         val output = bind()
         targetChange.accept("150000")
-        output.baseResult.test().assertValue("7.5000")
+        output.baseResult.test().assertValue("7.50")
     }
 
     @Test
@@ -98,7 +98,7 @@ class ConverterViewModelTest {
         val output = bind()
         targetChange.accept("150000")
         targetUnitChange.accept(0)
-        output.baseResult.test().assertValue("150000.0000")
+        output.baseResult.test().assertValue("150000.00")
     }
 
     @Test
@@ -106,7 +106,7 @@ class ConverterViewModelTest {
         val output = bind()
         baseChange.accept("1")
         baseUnitChange.accept(1)
-        output.targetResult.test().assertValue("1.0000")
+        output.targetResult.test().assertValue("1.00")
     }
 
     @Test
@@ -117,7 +117,7 @@ class ConverterViewModelTest {
         baseChange.accept("hello")
         baseChange.accept("-200")
         baseChange.accept("0.1")
-        observer.assertValues("0", "20000.0000", "", "2000.0000")
+        observer.assertValues("0", "20000.00", "", "2000.00")
     }
 
     @Test
@@ -128,7 +128,7 @@ class ConverterViewModelTest {
         targetChange.accept("hello")
         targetChange.accept("-200")
         targetChange.accept("10000")
-        observer.assertValues("0", "0.0500", "", "0.5000")
+        observer.assertValues("0", "0.05", "", "0.50")
     }
 
     @Test

@@ -3,6 +3,7 @@
     android:id="@+id/test"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
@@ -16,7 +17,8 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="32dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <LinearLayout
             android:id="@+id/baseContainer"
@@ -28,8 +30,10 @@
                 android:id="@+id/edtBase"
                 android:layout_width="156dp"
                 android:layout_height="wrap_content"
+                android:digits="0123456789.,"
                 android:ems="10"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                tools:ignore="LabelFor" />
 
             <Spinner
                 android:id="@+id/spBase"
@@ -48,8 +52,10 @@
                 android:id="@+id/edtTarget"
                 android:layout_width="156dp"
                 android:layout_height="wrap_content"
+                android:digits="0123456789.,"
                 android:ems="10"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                tools:ignore="LabelFor" />
 
             <Spinner
                 android:id="@+id/spTarget"
@@ -64,11 +70,11 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_centerInParent="true"
+        android:layout_margin="6dp"
         android:elevation="6dp"
+        android:src="@drawable/ic_money"
         app:civ_border_color="@android:color/white"
         app:civ_border_width="1dp"
-        android:layout_margin="6dp"
-        android:src="@drawable/ic_money"
         app:civ_fill_color="@color/colorPrimary" />
 
     <ProgressBar

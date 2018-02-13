@@ -9,14 +9,26 @@ import com.jakewharton.rxbinding2.widget.RxAdapterView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import timber.log.Timber
+import java.text.NumberFormat
 import java.util.concurrent.TimeUnit
-
-
 
 fun setText(editText: EditText, value: String) {
     if (editText.text.toString() != value) {
         editText.setText(value)
         editText.setSelection(value.length)
+    }
+}
+
+fun setMoney(editText: EditText, value: String) {
+    try {
+        val numberFormatter = NumberFormat.getNumberInstance()
+        val number = numberFormatter.parse(value)
+        val result = numberFormatter.format(number)
+        setText(editText, result)
+    } catch (e: Exception) {
+        Timber.e(e)
+        setText(editText, "")
     }
 }
 

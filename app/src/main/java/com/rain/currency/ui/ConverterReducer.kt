@@ -1,10 +1,20 @@
 package com.rain.currency.ui
 
-import com.rain.currency.di.activity.ActivityScope
-import javax.inject.Inject
+import timber.log.Timber
+import java.text.NumberFormat
 
-@ActivityScope
-class ConverterReducer @Inject constructor() {
+class ConverterReducer {
+    private val numberFormatter = NumberFormat.getNumberInstance()
+
+    private fun parseNumber(value: String): Double {
+        return try {
+            numberFormatter.parse(value).toString()
+        } catch (e: Exception) {
+            Timber.e(e)
+            ""
+        }.toDoubleOrNull() ?: -1.0
+    }
+
     fun changeBase(prev: ConverterState, value: String): ConverterState {
         prev.data?.let {
             convertBase(value, it.currency.baseUnit, it)?.let {
@@ -49,9 +59,9 @@ class ConverterReducer @Inject constructor() {
 
         exchange.currencies[unit]?.let { targetPrice ->
             exchange.currencies[currency.baseUnit]?.let { basePrice ->
-                val result = (value.toDoubleOrNull() ?: -1.0) * targetPrice / basePrice
+                val result = parseNumber(value) * targetPrice / basePrice
                 val newCurrency = when {
-                    result > 0 -> currency.copy(base = String.format("%.4f", result), target = value, targetUnit = unit)
+                    result > 0 -> currency.copy(base = String.format("%.2f", result), target = value, targetUnit = unit)
                     result == 0.0 -> currency.copy(base = "0", target = value, targetUnit = unit)
                     else -> currency.copy(base = "", target = value, targetUnit = unit)
                 }
@@ -69,9 +79,9 @@ class ConverterReducer @Inject constructor() {
 
         exchange.currencies[unit]?.let { basePrice ->
             exchange.currencies[currency.targetUnit]?.let { targetPrice ->
-                val result = (value.toDoubleOrNull() ?: -1.0) * basePrice / targetPrice
+                val result = parseNumber(value) * basePrice / targetPrice
                 val newCurrency = when {
-                    result > 0 -> currency.copy(base = value, target = String.format("%.4f", result), baseUnit = unit)
+                    result > 0 -> currency.copy(base = value, target = String.format("%.2f", result), baseUnit = unit)
                     result == 0.0 -> currency.copy(base = value, target = "0", baseUnit = unit)
                     else -> currency.copy(base = value, target = "", baseUnit = unit)
                 }
@@ -81,5 +91,9 @@ class ConverterReducer @Inject constructor() {
         }
 
         return null
+    }
+
+    fun expand(prev: ConverterState, expand: Boolean): ConverterState {
+        return prev.copy(expand = expand)
     }
 }

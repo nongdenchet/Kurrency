@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.IBinder
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +24,6 @@ abstract class OverlayService : Service(), View.OnTouchListener {
     private var originalXPos: Int = 0
     private var originalYPos: Int = 0
     protected var moving: Boolean = false
-    protected var expand: Boolean = false
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -35,10 +35,20 @@ abstract class OverlayService : Service(), View.OnTouchListener {
 
     abstract fun content(container: ViewGroup): View
 
+    protected open fun onBackPressed(): Boolean {
+        return false
+    }
+
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        container = FrameLayout(this)
+        container = object : FrameLayout(this) {
+            override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                return if (event.keyCode == KeyEvent.KEYCODE_BACK && onBackPressed()) {
+                    true
+                } else super.dispatchKeyEvent(event)
+            }
+        }
         container.layoutParams = ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         container.addView(content(container))
         container.isFocusable = true
@@ -50,12 +60,25 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         params.gravity = Gravity.TOP or Gravity.START
         params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         params.width = container.layoutParams.width
         params.height = container.layoutParams.height
         params.x = screenSize.widthPixels / 2
         params.y = screenSize.heightPixels / 2
 
         windowManager.addView(container, params)
+    }
+
+    protected fun unFocusWindow() {
+        val params = container.layoutParams as WindowManager.LayoutParams
+        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        windowManager.updateViewLayout(container, params)
+    }
+
+    protected fun focusWindow() {
+        val params = container.layoutParams as WindowManager.LayoutParams
+        params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
+        windowManager.updateViewLayout(container, params)
     }
 
     override fun onDestroy() {

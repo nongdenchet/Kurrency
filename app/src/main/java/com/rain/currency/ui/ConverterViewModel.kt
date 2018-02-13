@@ -2,19 +2,13 @@ package com.rain.currency.ui
 
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.rain.currency.data.repo.CurrencyRepo
-import com.rain.currency.di.activity.ActivityScope
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import timber.log.Timber
-import javax.inject.Inject
 
-@ActivityScope
-class ConverterViewModel @Inject constructor(
-        private val currencyRepo: CurrencyRepo,
-        private val reducer: ConverterReducer
-) {
+class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo, private val reducer: ConverterReducer) {
     private val state = BehaviorRelay.createDefault(ConverterState.INIT_STATE)
     private val disposables = CompositeDisposable()
 
@@ -29,8 +23,9 @@ class ConverterViewModel @Inject constructor(
     class Output(
             val baseResult: Observable<String>,
             val targetResult: Observable<String>,
-            val converterConfigurations: Observable<ConverterConfigurations>,
-            val loading: Observable<Boolean>
+            val converterConfiguration: Observable<ConverterConfiguration>,
+            val loading: Observable<Boolean>,
+            val expand: Observable<Boolean>
     )
 
     private fun fetchCurrency(): Single<ConverterState.Data> {
@@ -69,16 +64,18 @@ class ConverterViewModel @Inject constructor(
         val targetResult = getData()
                 .map { it.currency.target }
                 .distinctUntilChanged()
-        val spinnerViewModel = getData()
-                .map { toSpinnerViewModel(it) }
+        val configuration = getData()
+                .map { toConfiguration(it) }
                 .distinctUntilChanged()
-        val loading = state.map { it.loading }
+        val loading = state.filter { it.expand }
+                .map { it.loading }
+        val expand = state.map { it.expand }
 
-        return Output(baseResult, targetResult, spinnerViewModel, loading)
+        return Output(baseResult, targetResult, configuration, loading, expand)
     }
 
-    private fun toSpinnerViewModel(data: ConverterState.Data): ConverterConfigurations {
-        return ConverterConfigurations(
+    private fun toConfiguration(data: ConverterState.Data): ConverterConfiguration {
+        return ConverterConfiguration(
                 data.exchange.currencies.keys.toTypedArray(),
                 data.exchange.currencies.indexOfKey(data.currency.baseUnit),
                 data.exchange.currencies.indexOfKey(data.currency.targetUnit)
@@ -102,5 +99,13 @@ class ConverterViewModel @Inject constructor(
             )
         }
         disposables.dispose()
+    }
+
+    fun isExpand(): Boolean {
+        return state.value.expand
+    }
+
+    fun setExpand(expand: Boolean) {
+        state.accept(reducer.expand(state.value, expand))
     }
 }

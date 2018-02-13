@@ -3,6 +3,7 @@ package com.rain.currency.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,7 @@ import com.rain.currency.R
 import com.rain.currency.support.OverlayService
 import com.rain.currency.utils.getStreamSelection
 import com.rain.currency.utils.getStreamText
-import com.rain.currency.utils.setText
+import com.rain.currency.utils.setMoney
 import dagger.android.AndroidInjection
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,7 +31,9 @@ import javax.inject.Inject
 
 
 class ConverterService : OverlayService() {
+    private val DELAY_UNTIL_GAIN_FOCUS = 100L
     private val disposables = CompositeDisposable()
+    private val handler = Handler()
     private lateinit var inputManager: InputMethodManager
 
     @BindView(R.id.spBase)
@@ -61,7 +64,7 @@ class ConverterService : OverlayService() {
         bindViewModel()
     }
 
-    private fun bindUnits(config: ConverterConfigurations) {
+    private fun bindUnits(config: ConverterConfiguration) {
         spBase.adapter = configureAdapter(config.units)
         spTarget.adapter = configureAdapter(config.units)
         spBase.setSelection(config.baseIndex)
@@ -84,21 +87,41 @@ class ConverterService : OverlayService() {
 
         disposables.add(output.baseResult
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ setText(edtBase, it) }, Timber::e))
+                .subscribe({ setMoney(edtBase, it) }, Timber::e))
         disposables.add(output.targetResult
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ setText(edtTarget, it) }, Timber::e))
-        disposables.add(output.converterConfigurations
+                .subscribe({ setMoney(edtTarget, it) }, Timber::e))
+        disposables.add(output.converterConfiguration
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ bindUnits(it) }, Timber::e))
         disposables.addAll(output.loading
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ bindLoading(it) }, Timber::e))
+        disposables.addAll(output.expand
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ bindExpand(it) }, Timber::e))
+    }
+
+    private fun bindExpand(expand: Boolean) {
+        if (expand) {
+            showContent()
+        } else {
+            hideContent()
+        }
     }
 
     private fun bindLoading(loading: Boolean) {
         pbLoading.visibility = if (loading) View.VISIBLE else View.GONE
-        content.visibility = if (!loading && expand) View.VISIBLE else View.GONE
+        content.visibility = if (loading) View.GONE else View.VISIBLE
+    }
+
+    override fun onBackPressed(): Boolean {
+        return if (viewModel.isExpand()) {
+            viewModel.setExpand(false)
+            true
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onDestroy() {
@@ -112,24 +135,21 @@ class ConverterService : OverlayService() {
     }
 
     private fun showContent() {
+        focusWindow()
         btnMoney.visibility = View.GONE
         content.visibility = View.VISIBLE
-        expand = true
         edtBase.requestFocus()
-        inputManager.showSoftInput(edtBase, 0)
+        handler.postDelayed({
+            inputManager.showSoftInput(edtBase, 0)
+        }, DELAY_UNTIL_GAIN_FOCUS)
     }
 
     private fun hideContent() {
         btnMoney.visibility = View.VISIBLE
         content.visibility = View.GONE
-        expand = false
         inputManager.hideSoftInputFromWindow(edtBase.windowToken, 0)
         inputManager.hideSoftInputFromWindow(edtTarget.windowToken, 0)
-    }
-
-    @OnClick(R.id.content)
-    fun onContentClicked() {
-        hideContent()
+        unFocusWindow()
     }
 
     @OnLongClick(R.id.btnMoney)
@@ -143,10 +163,6 @@ class ConverterService : OverlayService() {
 
     @OnClick(R.id.btnMoney)
     fun onBtnMoneyClicked() {
-        if (expand) {
-            hideContent()
-        } else {
-            showContent()
-        }
+        viewModel.setExpand(true)
     }
 }

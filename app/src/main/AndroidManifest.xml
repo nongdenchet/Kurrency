@@ -17,8 +17,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
-        <activity android:name=".ui.ConverterActivity" />
-
         <service android:name=".ui.ConverterService" />
 
         <service
