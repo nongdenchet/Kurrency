@@ -2,7 +2,7 @@ package com.rain.currency.di.application
 
 import android.content.Context
 import com.rain.currency.CurrencyApp
-import com.rain.currency.di.activity.ActivityBindingModule
+import com.rain.currency.di.BindingModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -10,7 +10,7 @@ import dagger.android.AndroidInjectionModule
 @ApplicationScope
 @Component(modules = arrayOf(
         AndroidInjectionModule::class,
-        ActivityBindingModule::class,
+        BindingModule::class,
         AppModule::class
 ))
 interface AppComponent {

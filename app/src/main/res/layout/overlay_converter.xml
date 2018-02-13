@@ -61,9 +61,13 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/btnMoney"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_centerInParent="true"
+        android:elevation="6dp"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="1dp"
+        android:layout_margin="6dp"
         android:src="@drawable/ic_money"
         app:civ_fill_color="@color/colorPrimary" />
 

@@ -34,11 +34,11 @@ class ConverterActivity : AppCompatActivity() {
         bindViewModel()
     }
 
-    private fun bindUnits(viewModel: SpinnerViewModel) {
-        spBase.adapter = configureAdapter(viewModel.units)
-        spTarget.adapter = configureAdapter(viewModel.units)
-        spBase.setSelection(viewModel.baseIndex)
-        spTarget.setSelection(viewModel.targetIndex)
+    private fun bindUnits(config: ConverterConfigurations) {
+        spBase.adapter = configureAdapter(config.units)
+        spTarget.adapter = configureAdapter(config.units)
+        spBase.setSelection(config.baseIndex)
+        spTarget.setSelection(config.targetIndex)
     }
 
     private fun configureAdapter(units: Array<String>): ArrayAdapter<String> {
@@ -61,7 +61,7 @@ class ConverterActivity : AppCompatActivity() {
         disposables.add(output.targetResult
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ setText(edtTarget, it) }, Timber::e))
-        disposables.add(output.spinnerViewModel
+        disposables.add(output.converterConfigurations
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ bindUnits(it) }, Timber::e))
         disposables.addAll(output.loading

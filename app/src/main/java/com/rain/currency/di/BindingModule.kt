@@ -1,5 +1,7 @@
-package com.rain.currency.di.activity
+package com.rain.currency.di
 
+import com.rain.currency.di.activity.ActivityScope
+import com.rain.currency.service.CurrencyAccessibilityService
 import com.rain.currency.ui.ConverterActivity
 import com.rain.currency.ui.ConverterModule
 import com.rain.currency.ui.ConverterService
@@ -7,7 +9,7 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class ActivityBindingModule {
+abstract class BindingModule {
 
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(ConverterModule::class))
@@ -16,4 +18,8 @@ abstract class ActivityBindingModule {
     @ActivityScope
     @ContributesAndroidInjector(modules = arrayOf(ConverterModule::class))
     abstract fun contributeConverterService(): ConverterService
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract fun contributeCurrencyAccessibilityService(): CurrencyAccessibilityService
 }

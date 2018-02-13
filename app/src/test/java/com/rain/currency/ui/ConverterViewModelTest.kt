@@ -56,7 +56,7 @@ class ConverterViewModelTest {
     @Test
     fun shouldEmitSpinnerData() {
         val output = bind()
-        val viewModel = output.spinnerViewModel.test().values()[0]
+        val viewModel = output.converterConfigurations.test().values()[0]
         assertArrayEquals(arrayOf("USD", "VND"), viewModel.units)
         assertEquals(0, viewModel.baseIndex)
         assertEquals(1, viewModel.targetIndex)

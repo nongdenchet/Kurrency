@@ -29,7 +29,7 @@ class ConverterViewModel @Inject constructor(
     class Output(
             val baseResult: Observable<String>,
             val targetResult: Observable<String>,
-            val spinnerViewModel: Observable<SpinnerViewModel>,
+            val converterConfigurations: Observable<ConverterConfigurations>,
             val loading: Observable<Boolean>
     )
 
@@ -77,8 +77,8 @@ class ConverterViewModel @Inject constructor(
         return Output(baseResult, targetResult, spinnerViewModel, loading)
     }
 
-    private fun toSpinnerViewModel(data: ConverterState.Data): SpinnerViewModel {
-        return SpinnerViewModel(
+    private fun toSpinnerViewModel(data: ConverterState.Data): ConverterConfigurations {
+        return ConverterConfigurations(
                 data.exchange.currencies.keys.toTypedArray(),
                 data.exchange.currencies.indexOfKey(data.currency.baseUnit),
                 data.exchange.currencies.indexOfKey(data.currency.targetUnit)

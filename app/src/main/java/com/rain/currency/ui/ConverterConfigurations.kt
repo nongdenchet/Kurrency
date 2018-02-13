@@ -2,12 +2,12 @@ package com.rain.currency.ui
 
 import java.util.Arrays
 
-data class SpinnerViewModel(val units: Array<String>, val baseIndex: Int, val targetIndex: Int) {
+data class ConverterConfigurations(val units: Array<String>, val baseIndex: Int, val targetIndex: Int) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as SpinnerViewModel
+        other as ConverterConfigurations
 
         if (!Arrays.equals(units, other.units)) return false
         if (baseIndex != other.baseIndex) return false

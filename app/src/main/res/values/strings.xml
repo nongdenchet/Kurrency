@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Currency Converter</string>
+    <string name="accessibility_service_description">Description</string>
+    <string name="accessibility_service_summary">Summary</string>
 </resources>
