@@ -8,6 +8,9 @@ import android.os.IBinder
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.MotionEvent.ACTION_DOWN
+import android.view.MotionEvent.ACTION_MOVE
+import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -17,13 +20,13 @@ import com.rain.currency.utils.getOverlayType
 import com.rain.currency.utils.getScreenSize
 
 abstract class OverlayService : Service(), View.OnTouchListener {
-    private lateinit var windowManager: WindowManager
+    protected lateinit var windowManager: WindowManager
     protected lateinit var container: FrameLayout
     private var offsetX: Float = 0.toFloat()
     private var offsetY: Float = 0.toFloat()
     private var originalXPos: Int = 0
     private var originalYPos: Int = 0
-    protected var moving: Boolean = false
+    private var moving: Boolean = false
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -86,11 +89,15 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         super.onDestroy()
     }
 
+    protected open fun onDragStarted(x: Float, y: Float) {}
+    protected open fun onDragEnded(x: Float, y: Float) {}
+    protected open fun onDragMoved(x: Float, y: Float) {}
+
     override fun onTouch(view: View, event: MotionEvent): Boolean {
         val x = event.rawX
         val y = event.rawY
 
-        if (event.action == MotionEvent.ACTION_DOWN) {
+        if (event.action == ACTION_DOWN) {
             moving = false
 
             val location = IntArray(2)
@@ -99,7 +106,9 @@ abstract class OverlayService : Service(), View.OnTouchListener {
             originalYPos = location[1]
             offsetX = originalXPos - x
             offsetY = originalYPos - y
-        } else if (event.action == MotionEvent.ACTION_MOVE) {
+
+            onDragStarted(x, y)
+        } else if (event.action == ACTION_MOVE) {
             val params = container.layoutParams as WindowManager.LayoutParams
             val newX = (offsetX + x).toInt()
             val newY = (offsetY + y).toInt()
@@ -112,7 +121,10 @@ abstract class OverlayService : Service(), View.OnTouchListener {
             params.y = newY
             windowManager.updateViewLayout(container, params)
             moving = true
-        } else if (event.action == MotionEvent.ACTION_UP) {
+
+            onDragMoved(x, y)
+        } else if (event.action == ACTION_UP) {
+            onDragEnded(x, y)
             if (moving) {
                 return true
             }

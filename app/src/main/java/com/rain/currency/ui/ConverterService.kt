@@ -3,22 +3,30 @@ package com.rain.currency.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.PixelFormat
 import android.os.Handler
+import android.support.v4.content.ContextCompat
+import android.util.DisplayMetrics
+import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Spinner
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
-import butterknife.OnLongClick
 import com.rain.currency.R
 import com.rain.currency.support.OverlayService
+import com.rain.currency.utils.getOverlayType
+import com.rain.currency.utils.getScreenSize
 import com.rain.currency.utils.getStreamSelection
 import com.rain.currency.utils.getStreamText
 import com.rain.currency.utils.setMoney
@@ -35,6 +43,7 @@ class ConverterService : OverlayService() {
     private val disposables = CompositeDisposable()
     private val handler = Handler()
     private lateinit var inputManager: InputMethodManager
+    private lateinit var removeBar: FrameLayout
 
     @BindView(R.id.spBase)
     lateinit var spBase: Spinner
@@ -54,14 +63,71 @@ class ConverterService : OverlayService() {
     @Inject
     lateinit var viewModel: ConverterViewModel
 
-    @SuppressLint("ClickableViewAccessibility")
+    private val removeBarLayoutParams: WindowManager.LayoutParams by lazy {
+        val params = WindowManager.LayoutParams()
+        params.format = PixelFormat.RGBA_8888
+        params.type = getOverlayType()
+        params.gravity = Gravity.TOP or Gravity.START
+        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        params.width = removeBar.layoutParams.width
+        params.height = removeBar.layoutParams.height
+        params.y = removeBarY()
+        params
+    }
+
+    private val screenSize: DisplayMetrics by lazy {
+        getScreenSize(windowManager)
+    }
+
+    private val removeBarHeight: Int by lazy {
+        resources.getDimensionPixelSize(R.dimen.remove_bar_height)
+    }
+
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
         inputManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         ButterKnife.bind(this, container)
-        btnMoney.setOnTouchListener(this)
+        setUpView()
         bindViewModel()
+    }
+
+    private fun setUpView() {
+        setUpMoneyButton()
+        setUpRemoveBar()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun setUpRemoveBar() {
+        removeBar = LayoutInflater.from(this).inflate(R.layout.remove_bar, null) as FrameLayout
+        removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, removeBarHeight)
+    }
+
+    private fun removeBarY() = screenSize.heightPixels - removeBarHeight
+
+    override fun onDragStarted(x: Float, y: Float) {
+        windowManager.addView(removeBar, removeBarLayoutParams)
+    }
+
+    override fun onDragEnded(x: Float, y: Float) {
+        windowManager.removeView(removeBar)
+    }
+
+    override fun onDragMoved(x: Float, y: Float) {
+        removeBar.setBackgroundColor(ContextCompat.getColor(this,
+                if (y > removeBarY() - removeBarHeight) R.color.red
+                else R.color.light_red))
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setUpMoneyButton() {
+        btnMoney.setOnTouchListener { view, event ->
+            if (event.rawY > removeBarY() - removeBarHeight && event.action == ACTION_UP) {
+                stopService(Intent(this, ConverterService::class.java))
+                return@setOnTouchListener true
+            }
+            return@setOnTouchListener onTouch(view, event)
+        }
     }
 
     private fun bindUnits(config: ConverterConfiguration) {
@@ -125,6 +191,7 @@ class ConverterService : OverlayService() {
     }
 
     override fun onDestroy() {
+        windowManager.removeView(removeBar)
         viewModel.unbind()
         disposables.dispose()
         super.onDestroy()
@@ -150,15 +217,6 @@ class ConverterService : OverlayService() {
         inputManager.hideSoftInputFromWindow(edtBase.windowToken, 0)
         inputManager.hideSoftInputFromWindow(edtTarget.windowToken, 0)
         unFocusWindow()
-    }
-
-    @OnLongClick(R.id.btnMoney)
-    fun onBtnMoneyLongClicked(): Boolean {
-        if (!moving) {
-            stopService(Intent(this, ConverterService::class.java))
-            return true
-        }
-        return false
     }
 
     @OnClick(R.id.btnMoney)
