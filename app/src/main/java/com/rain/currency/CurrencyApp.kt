@@ -3,6 +3,7 @@ package com.rain.currency
 import android.app.Activity
 import android.app.Application
 import android.app.Service
+import com.rain.currency.di.application.AppComponent
 import com.rain.currency.di.application.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -12,8 +13,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-
 class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
+    lateinit var component: AppComponent
 
     @Inject
     lateinit var dispatchingActivityInjector: DispatchingAndroidInjector<Activity>
@@ -31,9 +32,9 @@ class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
-        DaggerAppComponent.builder()
+        component = DaggerAppComponent.builder()
                 .application(this)
                 .build()
-                .inject(this)
+        component.inject(this)
     }
 }

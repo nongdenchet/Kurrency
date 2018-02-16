@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="remove_bar_height">56dp</dimen>
+    <dimen name="button_money_size">56dp</dimen>
+    <dimen name="country_flag_size">36dp</dimen>
+    <dimen name="space_small">8dp</dimen>
+    <dimen name="space_normal">16dp</dimen>
+    <dimen name="edit_text_size">136dp</dimen>
+    <dimen name="size_large">24sp</dimen>
+    <dimen name="space_xlarge">32dp</dimen>
+    <dimen name="space_large">24dp</dimen>
+    <dimen name="title_view_size">60dp</dimen>
+    <dimen name="size_normal">16sp</dimen>
+    <dimen name="flag_border_size">1dp</dimen>
+    <dimen name="unit_size">24dp</dimen>
+    <dimen name="space_medium">12dp</dimen>
+    <dimen name="size_medium">18sp</dimen>
+    <dimen name="button_padding">20dp</dimen>
+    <dimen name="floating_margin">6dp</dimen>
 </resources>

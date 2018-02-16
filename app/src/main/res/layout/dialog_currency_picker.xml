@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/space_normal">
+
+    <EditText
+        android:id="@+id/edtSearch"
+        style="@style/Text.EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:hint="@string/search"
+        android:inputType="text"
+        android:textColor="@color/black"
+        tools:ignore="LabelFor" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/edtSearch"
+        android:layout_marginBottom="@dimen/space_small"
+        android:layout_marginTop="@dimen/space_small"
+        android:background="@color/dividerColor" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvCurrencies"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/divider" />
+</RelativeLayout>

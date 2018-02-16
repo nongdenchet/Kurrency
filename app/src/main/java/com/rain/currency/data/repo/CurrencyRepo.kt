@@ -17,10 +17,15 @@ open class CurrencyRepo @Inject constructor(
         private val currencyApi: CurrencyApi,
         private val userCurrencyStore: UserCurrencyStore
 ) {
+    private var cache: Exchange? = null
 
-    open fun fetchExchange(): Single<Exchange> {
+    open fun fetchExchange(useCache: Boolean = false): Single<Exchange> {
+        if (useCache && cache != null) {
+            return Single.just(cache)
+        }
         return currencyApi.getLiveCurrency()
                 .map { toExchange(it) }
+                .doOnSuccess { cache = it }
                 .subscribeOn(Schedulers.io())
     }
 

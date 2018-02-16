@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.WindowManager
 import android.widget.FrameLayout
+import com.rain.currency.R
 import com.rain.currency.utils.getOverlayType
 import com.rain.currency.utils.getScreenSize
 
@@ -57,6 +58,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         container.isFocusable = true
 
         val screenSize = getScreenSize(windowManager)
+        val buttonMoneySize = resources.getDimensionPixelSize(R.dimen.button_money_size)
         val params = WindowManager.LayoutParams()
         params.format = PixelFormat.RGBA_8888
         params.type = getOverlayType()
@@ -66,8 +68,8 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         params.width = container.layoutParams.width
         params.height = container.layoutParams.height
-        params.x = screenSize.widthPixels / 2
-        params.y = screenSize.heightPixels / 2
+        params.x = screenSize.widthPixels - buttonMoneySize
+        params.y = screenSize.heightPixels / 2 - buttonMoneySize / 2
 
         windowManager.addView(container, params)
     }

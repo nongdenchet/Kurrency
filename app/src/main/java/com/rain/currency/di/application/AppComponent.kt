@@ -3,6 +3,8 @@ package com.rain.currency.di.application
 import android.content.Context
 import com.rain.currency.CurrencyApp
 import com.rain.currency.di.BindingModule
+import com.rain.currency.ui.picker.CurrencyPickerComponent
+import com.rain.currency.ui.picker.CurrencyPickerModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -24,4 +26,6 @@ interface AppComponent {
     }
 
     fun inject(app: CurrencyApp)
+
+    fun plus(currencyPickerModule: CurrencyPickerModule): CurrencyPickerComponent
 }

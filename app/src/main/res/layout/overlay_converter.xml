@@ -13,10 +13,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@android:color/white"
+        android:layout_margin="@dimen/floating_margin"
+        android:background="@drawable/border"
+        android:elevation="@dimen/floating_margin"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="32dp"
+        android:padding="@dimen/space_normal"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -24,63 +26,104 @@
             android:id="@+id/baseContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivBaseIcon"
+                android:layout_width="@dimen/country_flag_size"
+                android:layout_height="@dimen/country_flag_size"
+                app:civ_border_color="@color/borderColor"
+                app:civ_border_width="@dimen/flag_border_size"
+                tools:src="@drawable/ic_sgd" />
+
+            <TextView
+                android:id="@+id/tvBaseUnit"
+                style="@style/TitleText"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_medium"
+                tools:text="SGD" />
 
             <EditText
                 android:id="@+id/edtBase"
-                android:layout_width="156dp"
+                style="@style/Text.EditText.Decimal"
                 android:layout_height="wrap_content"
-                android:digits="0123456789.,"
-                android:ems="10"
-                android:inputType="numberDecimal"
                 tools:ignore="LabelFor" />
 
-            <Spinner
-                android:id="@+id/spBase"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tvBaseSymbol"
+                style="@style/Text"
+                android:layout_width="@dimen/unit_size"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:gravity="end"
+                android:lines="1"
+                tools:text="$" />
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginBottom="@dimen/space_normal"
+            android:layout_marginTop="@dimen/space_normal"
+            android:background="@color/dividerColor" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:gravity="center"
             android:orientation="horizontal">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivTargetIcon"
+                android:layout_width="@dimen/country_flag_size"
+                android:layout_height="@dimen/country_flag_size"
+                app:civ_border_color="@color/borderColor"
+                app:civ_border_width="@dimen/flag_border_size"
+                tools:src="@drawable/ic_vnd" />
+
+            <TextView
+                android:id="@+id/tvTargetUnit"
+                style="@style/TitleText"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/space_medium"
+                tools:text="VND" />
 
             <EditText
                 android:id="@+id/edtTarget"
-                android:layout_width="156dp"
+                style="@style/Text.EditText.Decimal"
                 android:layout_height="wrap_content"
-                android:digits="0123456789.,"
-                android:ems="10"
-                android:inputType="numberDecimal"
                 tools:ignore="LabelFor" />
 
-            <Spinner
-                android:id="@+id/spTarget"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tvTargetSymbol"
+                style="@style/Text"
+                android:layout_width="@dimen/unit_size"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:gravity="end"
+                android:lines="1"
+                tools:text="₫" />
         </LinearLayout>
     </LinearLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/btnMoney"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="@dimen/button_money_size"
+        android:layout_height="@dimen/button_money_size"
         android:layout_centerInParent="true"
-        android:layout_margin="6dp"
-        android:elevation="6dp"
+        android:layout_margin="@dimen/floating_margin"
+        android:elevation="@dimen/floating_margin"
         android:src="@drawable/ic_money"
         app:civ_border_color="@android:color/white"
         app:civ_border_width="1dp"
-        app:civ_fill_color="@color/colorPrimary" />
+        app:civ_fill_color="@color/colorPrimary"
+        tools:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/pbLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="gone" />
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="gone"
+        tools:visibility="visible" />
 </RelativeLayout>

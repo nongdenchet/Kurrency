@@ -7,10 +7,11 @@ import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.network.CurrencyApi
 import com.rain.currency.data.repo.CurrencyRepo
+import com.rain.currency.support.CurrencyMapper
+import com.rain.currency.ui.converter.ConverterReducer
+import com.rain.currency.ui.converter.ConverterViewModel
 import io.reactivex.Observable
 import io.reactivex.Single
-import junit.framework.Assert.assertEquals
-import org.junit.Assert.assertArrayEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -45,7 +46,11 @@ class ConverterViewModelTest {
 
     @Before
     fun setUp() {
-        converterViewModel = ConverterViewModel(CurrencyRepoStub(userCurrencyStore), ConverterReducer())
+        converterViewModel = ConverterViewModel(
+                CurrencyRepoStub(userCurrencyStore),
+                ConverterReducer(),
+                mock(CurrencyMapper::class.java)
+        )
     }
 
     private fun bind(trigger: Observable<Any> = Observable.just(1)): ConverterViewModel.Output {
@@ -54,36 +59,27 @@ class ConverterViewModelTest {
     }
 
     @Test
-    fun shouldEmitSpinnerData() {
-        val output = bind()
-        val viewModel = output.converterConfiguration.test().values()[0]
-        assertArrayEquals(arrayOf("USD", "VND"), viewModel.units)
-        assertEquals(0, viewModel.baseIndex)
-        assertEquals(1, viewModel.targetIndex)
-    }
-
-    @Test
     fun shouldEmitLoading() {
         val trigger = PublishRelay.create<Int>()
         val output = bind(trigger.map {})
+        converterViewModel.setExpand(true)
         val observer = output.loading.test()
         trigger.accept(1)
-
         observer.assertValues(true, false)
     }
 
     @Test
     fun shouldEmitInitState() {
         val output = bind()
-        output.baseResult.test().assertValue("0")
-        output.targetResult.test().assertValue("0")
+        output.baseResult.test().assertValue("")
+        output.targetResult.test().assertValue("")
     }
 
     @Test
     fun shouldEmitNewTarget() {
         val output = bind()
         baseChange.accept("1")
-        output.targetResult.test().assertValue("20000.00")
+        output.targetResult.test().assertValue("20000")
     }
 
     @Test
@@ -98,7 +94,7 @@ class ConverterViewModelTest {
         val output = bind()
         targetChange.accept("150000")
         targetUnitChange.accept(0)
-        output.baseResult.test().assertValue("150000.00")
+        output.baseResult.test().assertValue("150000")
     }
 
     @Test
@@ -117,7 +113,7 @@ class ConverterViewModelTest {
         baseChange.accept("hello")
         baseChange.accept("-200")
         baseChange.accept("0.1")
-        observer.assertValues("0", "20000.00", "", "2000.00")
+        observer.assertValues("", "20000", "", "2000")
     }
 
     @Test
@@ -128,7 +124,7 @@ class ConverterViewModelTest {
         targetChange.accept("hello")
         targetChange.accept("-200")
         targetChange.accept("10000")
-        observer.assertValues("0", "0.05", "", "0.50")
+        observer.assertValues("", "0.05", "", "0.50")
     }
 
     @Test

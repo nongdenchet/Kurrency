@@ -17,7 +17,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
-        <service android:name=".ui.ConverterService" />
+        <service android:name=".ui.converter.ConverterService" />
 
         <service
             android:name=".service.CurrencyAccessibilityService"
@@ -32,8 +32,15 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
+        <activity
+            android:name=".ui.setting.SettingActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".ui.intro.IntroActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreen">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

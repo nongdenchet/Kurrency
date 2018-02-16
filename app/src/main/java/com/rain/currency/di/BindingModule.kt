@@ -2,8 +2,8 @@ package com.rain.currency.di
 
 import com.rain.currency.di.scope.ConverterScope
 import com.rain.currency.service.CurrencyAccessibilityService
-import com.rain.currency.ui.ConverterModule
-import com.rain.currency.ui.ConverterService
+import com.rain.currency.ui.converter.ConverterModule
+import com.rain.currency.ui.converter.ConverterService
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

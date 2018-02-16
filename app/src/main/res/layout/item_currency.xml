@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:paddingBottom="@dimen/space_small"
+    android:paddingTop="@dimen/space_small">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivIcon"
+        android:layout_width="@dimen/country_flag_size"
+        android:layout_height="@dimen/country_flag_size"
+        android:layout_alignParentStart="true"
+        app:civ_border_color="@color/borderColor"
+        app:civ_border_width="@dimen/flag_border_size"
+        tools:src="@drawable/ic_sgd" />
+
+    <TextView
+        android:id="@+id/tvUnit"
+        style="@style/TitleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/space_normal"
+        android:layout_toEndOf="@+id/ivIcon"
+        android:layout_toStartOf="@+id/tvSymbol"
+        tools:text="SGD" />
+
+    <TextView
+        android:id="@+id/tvSymbol"
+        style="@style/Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        tools:text="$" />
+</RelativeLayout>

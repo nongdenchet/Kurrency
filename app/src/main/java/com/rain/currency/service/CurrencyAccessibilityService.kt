@@ -4,7 +4,8 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
 import com.rain.currency.support.AppManager
-import com.rain.currency.ui.ConverterService
+import com.rain.currency.ui.converter.ConverterService
+import com.rain.currency.utils.hasOverlayPermission
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 
@@ -24,7 +25,9 @@ class CurrencyAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             if (event.packageName.toString() == appManager.getCurrentHomePackage()) {
-                startService(Intent(this, ConverterService::class.java))
+                if (hasOverlayPermission(this)) {
+                    startService(Intent(this, ConverterService::class.java))
+                }
             }
         }
     }

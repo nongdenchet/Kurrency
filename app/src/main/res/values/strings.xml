@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">Currency Converter</string>
-    <string name="accessibility_service_description">Description</string>
-    <string name="accessibility_service_summary">Summary</string>
+    <string name="app_name">Kurrency</string>
+    <string name="accessibility_service_description">Sometime user want to temporarily disable Kurrency. We use accessibility to enable Kurrency whenever user going back to home screen.</string>
+    <string name="search">Search</string>
+    <string name="welcome">Welcome to Kurrency</string>
+    <string name="description">Kurrency allows you quickly convert the currency without opening the application. To make this function works we need OVERLAY PERMISSION to be granted.</string>
+    <string name="grand_permission">grand permission</string>
 </resources>
