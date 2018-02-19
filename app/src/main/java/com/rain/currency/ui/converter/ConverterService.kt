@@ -224,7 +224,9 @@ class ConverterService : OverlayService() {
 
     override fun onDestroy() {
         currencyPicker.onDismiss = null
-        windowManager.removeView(removeBar)
+        if (removeBar.isAttachedToWindow) {
+            windowManager.removeView(removeBar)
+        }
         viewModel.unbind()
         disposables.dispose()
         super.onDestroy()
