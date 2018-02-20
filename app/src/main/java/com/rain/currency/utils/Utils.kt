@@ -15,6 +15,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.text.NumberFormat
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 fun setText(editText: EditText, value: String) {
@@ -70,6 +71,14 @@ fun getStreamText(editText: EditText): Observable<String> {
             .map { it.text() }
             .map { it.toString() }
             .subscribeOn(AndroidSchedulers.mainThread())
+}
+
+fun getLocale(context: Context): Locale {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        context.resources.configuration.locales[0]
+    } else {
+        context.resources.configuration.locale
+    }
 }
 
 fun getClicks(view: View): Observable<Any> {

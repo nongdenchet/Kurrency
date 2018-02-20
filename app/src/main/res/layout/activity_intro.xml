@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="156dp"
+        android:layout_height="156dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/space_xlarge"
         android:src="@drawable/ic_money"
