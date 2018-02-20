@@ -27,6 +27,7 @@ import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.OverlayService
 import com.rain.currency.ui.picker.CurrencyPicker
 import com.rain.currency.ui.picker.CurrencyType
+import com.rain.currency.utils.getClicks
 import com.rain.currency.utils.getOverlayType
 import com.rain.currency.utils.getScreenSize
 import com.rain.currency.utils.getStreamText
@@ -50,10 +51,14 @@ class ConverterService : OverlayService() {
     lateinit var edtBase: EditText
     @BindView(R.id.edtTarget)
     lateinit var edtTarget: EditText
+    @BindView(R.id.container)
+    lateinit var container: ViewGroup
     @BindView(R.id.content)
     lateinit var content: ViewGroup
     @BindView(R.id.btnMoney)
     lateinit var btnMoney: ImageView
+    @BindView(R.id.btnRetry)
+    lateinit var btnRetry: TextView
 
     @BindView(R.id.ivBaseIcon)
     lateinit var ivBaseIcon: ImageView
@@ -98,7 +103,7 @@ class ConverterService : OverlayService() {
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
-        ButterKnife.bind(this, container)
+        ButterKnife.bind(this, window)
         setUpView()
         bindViewModel()
     }
@@ -154,9 +159,16 @@ class ConverterService : OverlayService() {
         }
     }
 
+    private fun getTriggerClicks(): Observable<Any> {
+        return Observable.merge(
+                getClicks(btnRetry),
+                getClicks(btnMoney).doOnNext { viewModel.setExpand(true) }
+        ).startWith(0)
+    }
+
     private fun bindViewModel() {
         val input = ConverterViewModel.Input(
-                Observable.just(1),
+                getTriggerClicks(),
                 getStreamText(edtBase),
                 getStreamText(edtTarget),
                 currencyPicker.getUnit(CurrencyType.BASE),
@@ -176,12 +188,32 @@ class ConverterService : OverlayService() {
         disposables.add(output.targetCurrency
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ bindTargetCurrency(it) }, Timber::e))
-        disposables.addAll(output.loading
+        disposables.add(output.content
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ bindLoading(it) }, Timber::e))
-        disposables.addAll(output.expand
+                .subscribe({ bindContent(it) }, Timber::e))
+        disposables.add(output.loading
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { if (it) View.VISIBLE else View.GONE }
+                .subscribe({ pbLoading.visibility = it }, Timber::e))
+        disposables.add(output.error
+                .observeOn(AndroidSchedulers.mainThread())
+                .map { if (it) View.VISIBLE else View.GONE }
+                .subscribe({ btnRetry.visibility = it }, Timber::e))
+        disposables.add(output.expand
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ bindExpand(it) }, Timber::e))
+    }
+
+    private fun bindContent(value: Boolean) {
+        if (value) {
+            content.visibility = View.VISIBLE
+            edtBase.requestFocus()
+            handler.postDelayed({
+                inputMethodManager.showSoftInput(edtBase, 0)
+            }, DELAY_UNTIL_GAIN_FOCUS)
+        } else {
+            content.visibility = View.INVISIBLE
+        }
     }
 
     private fun bindBaseCurrency(currencyInfo: CurrencyInfo) {
@@ -208,11 +240,6 @@ class ConverterService : OverlayService() {
         }
     }
 
-    private fun bindLoading(loading: Boolean) {
-        pbLoading.visibility = if (loading) View.VISIBLE else View.GONE
-        content.visibility = if (loading) View.GONE else View.VISIBLE
-    }
-
     override fun onBackPressed(): Boolean {
         return if (viewModel.isExpand()) {
             viewModel.setExpand(false)
@@ -232,31 +259,22 @@ class ConverterService : OverlayService() {
         super.onDestroy()
     }
 
-    override fun content(container: ViewGroup): View {
-        return LayoutInflater.from(this).inflate(R.layout.overlay_converter, container, false)
+    override fun container(window: ViewGroup): View {
+        return LayoutInflater.from(this).inflate(R.layout.overlay_converter, window, false)
     }
 
     private fun showContent() {
         focusWindow()
         btnMoney.visibility = View.GONE
-        content.visibility = View.VISIBLE
-        edtBase.requestFocus()
-        handler.postDelayed({
-            inputMethodManager.showSoftInput(edtBase, 0)
-        }, DELAY_UNTIL_GAIN_FOCUS)
+        container.visibility = View.VISIBLE
     }
 
     private fun hideContent() {
         btnMoney.visibility = View.VISIBLE
-        content.visibility = View.GONE
+        container.visibility = View.GONE
         inputMethodManager.hideSoftInputFromWindow(edtBase.windowToken, 0)
         inputMethodManager.hideSoftInputFromWindow(edtTarget.windowToken, 0)
         unFocusWindow()
-    }
-
-    @OnClick(R.id.btnMoney)
-    fun onBtnMoneyClicked() {
-        viewModel.setExpand(true)
     }
 
     @OnClick(R.id.ivBaseIcon, R.id.tvBaseUnit)

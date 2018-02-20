@@ -7,8 +7,10 @@ import android.os.Build
 import android.provider.Settings
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
 import android.util.DisplayMetrics
+import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
+import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -67,5 +69,11 @@ fun getStreamText(editText: EditText): Observable<String> {
             .debounce(300, TimeUnit.MILLISECONDS)
             .map { it.text() }
             .map { it.toString() }
+            .subscribeOn(AndroidSchedulers.mainThread())
+}
+
+fun getClicks(view: View): Observable<Any> {
+    return RxView.clicks(view)
+            .throttleFirst(300, TimeUnit.MILLISECONDS)
             .subscribeOn(AndroidSchedulers.mainThread())
 }

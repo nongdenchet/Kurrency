@@ -44,7 +44,10 @@ class ConverterReducer {
 
     fun changeTargetUnit(prev: ConverterState, value: String): ConverterState {
         prev.data?.let {
-            convertTarget(it.currency.target, value, it)?.let {
+            val newCurrency = it.currency.copy(targetUnit = value)
+            val data = ConverterState.Data(it.exchange, newCurrency)
+
+            convertBase(newCurrency.base, newCurrency.baseUnit, data)?.let {
                 return prev.copy(data = it)
             }
         }

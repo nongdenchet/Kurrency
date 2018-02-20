@@ -24,6 +24,7 @@ open class CurrencyRepo @Inject constructor(
             return Single.just(cache)
         }
         return currencyApi.getLiveCurrency()
+                .retry(3)
                 .map { toExchange(it) }
                 .doOnSuccess { cache = it }
                 .subscribeOn(Schedulers.io())

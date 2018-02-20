@@ -22,16 +22,17 @@ class ConverterViewModelTest {
     private lateinit var converterViewModel: ConverterViewModel
     private val baseChange = PublishRelay.create<String>()
     private val targetChange = PublishRelay.create<String>()
-    private val baseUnitChange = PublishRelay.create<Int>()
-    private val targetUnitChange = PublishRelay.create<Int>()
+    private val baseUnitChange = PublishRelay.create<String>()
+    private val targetUnitChange = PublishRelay.create<String>()
     private val userCurrencyStore = mock(UserCurrencyStore::class.java)
 
     class CurrencyRepoStub constructor(userCurrencyStore: UserCurrencyStore)
         : CurrencyRepo(mock(CurrencyApi::class.java), userCurrencyStore) {
-        override fun fetchExchange(): Single<Exchange> {
+        override fun fetchExchange(useCache: Boolean): Single<Exchange> {
             val currencies = ArrayMap<String, Double>()
             currencies["USD"] = 1.0
             currencies["VND"] = 1.0 / 20000
+            currencies["SGD"] = 1.0 / 2
 
             return Single.fromCallable {
                 return@fromCallable Exchange("USD", Date(System.currentTimeMillis()), currencies)
@@ -65,7 +66,7 @@ class ConverterViewModelTest {
         converterViewModel.setExpand(true)
         val observer = output.loading.test()
         trigger.accept(1)
-        observer.assertValues(true, false)
+        observer.assertValues(false, true, false)
     }
 
     @Test
@@ -90,18 +91,18 @@ class ConverterViewModelTest {
     }
 
     @Test
-    fun shouldEmitNewBaseWhenTargetUnitChange() {
+    fun shouldEmitNewTargetWhenTargetUnitChange() {
         val output = bind()
-        targetChange.accept("150000")
-        targetUnitChange.accept(0)
-        output.baseResult.test().assertValue("150000")
+        baseChange.accept("15")
+        targetUnitChange.accept("SGD")
+        output.targetResult.test().assertValue("30.00")
     }
 
     @Test
     fun shouldEmitNewTargetWhenBaseUnitChange() {
         val output = bind()
         baseChange.accept("1")
-        baseUnitChange.accept(1)
+        baseUnitChange.accept("VND")
         output.targetResult.test().assertValue("1.00")
     }
 

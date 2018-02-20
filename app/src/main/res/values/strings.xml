@@ -5,4 +5,5 @@
     <string name="welcome">Welcome to Kurrency</string>
     <string name="description">Kurrency allows you quickly convert the currency without opening the application. To make this function works we need OVERLAY PERMISSION to be granted.</string>
     <string name="grand_permission">grand permission</string>
+    <string name="retry">No Internet\nClick to retry</string>
 </resources>

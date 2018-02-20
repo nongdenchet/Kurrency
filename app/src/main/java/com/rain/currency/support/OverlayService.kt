@@ -22,7 +22,7 @@ import com.rain.currency.utils.getScreenSize
 
 abstract class OverlayService : Service(), View.OnTouchListener {
     protected lateinit var windowManager: WindowManager
-    protected lateinit var container: FrameLayout
+    protected lateinit var window: FrameLayout
     private var offsetX: Float = 0.toFloat()
     private var offsetY: Float = 0.toFloat()
     private var originalXPos: Int = 0
@@ -37,7 +37,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         return START_NOT_STICKY
     }
 
-    abstract fun content(container: ViewGroup): View
+    abstract fun container(window: ViewGroup): View
 
     protected open fun onBackPressed(): Boolean {
         return false
@@ -46,16 +46,16 @@ abstract class OverlayService : Service(), View.OnTouchListener {
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        container = object : FrameLayout(this) {
+        window = object : FrameLayout(this) {
             override fun dispatchKeyEvent(event: KeyEvent): Boolean {
                 return if (event.keyCode == KeyEvent.KEYCODE_BACK && onBackPressed()) {
                     true
                 } else super.dispatchKeyEvent(event)
             }
         }
-        container.layoutParams = ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-        container.addView(content(container))
-        container.isFocusable = true
+        window.layoutParams = ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+        window.addView(container(window))
+        window.isFocusable = true
 
         val screenSize = getScreenSize(windowManager)
         val buttonMoneySize = resources.getDimensionPixelSize(R.dimen.button_money_size)
@@ -66,28 +66,28 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         params.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        params.width = container.layoutParams.width
-        params.height = container.layoutParams.height
+        params.width = window.layoutParams.width
+        params.height = window.layoutParams.height
         params.x = screenSize.widthPixels - buttonMoneySize
         params.y = screenSize.heightPixels / 2 - buttonMoneySize / 2
 
-        windowManager.addView(container, params)
+        windowManager.addView(window, params)
     }
 
     protected fun unFocusWindow() {
-        val params = container.layoutParams as WindowManager.LayoutParams
+        val params = window.layoutParams as WindowManager.LayoutParams
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        windowManager.updateViewLayout(container, params)
+        windowManager.updateViewLayout(window, params)
     }
 
     protected fun focusWindow() {
-        val params = container.layoutParams as WindowManager.LayoutParams
+        val params = window.layoutParams as WindowManager.LayoutParams
         params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
-        windowManager.updateViewLayout(container, params)
+        windowManager.updateViewLayout(window, params)
     }
 
     override fun onDestroy() {
-        windowManager.removeView(container)
+        windowManager.removeView(window)
         super.onDestroy()
     }
 
@@ -111,7 +111,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
 
             onDragStarted(x, y)
         } else if (event.action == ACTION_MOVE) {
-            val params = container.layoutParams as WindowManager.LayoutParams
+            val params = window.layoutParams as WindowManager.LayoutParams
             val newX = (offsetX + x).toInt()
             val newY = (offsetY + y).toInt()
 
@@ -121,7 +121,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
 
             params.x = newX
             params.y = newY
-            windowManager.updateViewLayout(container, params)
+            windowManager.updateViewLayout(window, params)
             moving = true
 
             onDragMoved(x, y)

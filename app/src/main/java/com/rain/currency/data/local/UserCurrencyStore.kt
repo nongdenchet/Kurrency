@@ -9,7 +9,6 @@ open class UserCurrencyStore @Inject constructor(private val sharedPreferences: 
     companion object {
         val BASE = "BASE"
         val TARGET = "TARGET"
-        val DEFAULT = "USD"
     }
 
     open fun storeCurrencies(base: String, target: String) {
@@ -21,8 +20,8 @@ open class UserCurrencyStore @Inject constructor(private val sharedPreferences: 
 
     open fun getCurrencies(): Pair<String, String> {
         return Pair(
-                sharedPreferences.getString(BASE, DEFAULT),
-                sharedPreferences.getString(TARGET, DEFAULT)
+                sharedPreferences.getString(BASE, "EUR"),
+                sharedPreferences.getString(TARGET, "USD")
         )
     }
 }
