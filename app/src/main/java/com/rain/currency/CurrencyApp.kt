@@ -12,7 +12,6 @@ import dagger.android.HasServiceInjector
 import timber.log.Timber
 import javax.inject.Inject
 
-
 class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
     lateinit var component: AppComponent
 
