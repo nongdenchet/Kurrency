@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Handler
 import android.support.v4.content.ContextCompat
-import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_UP
@@ -80,7 +79,7 @@ class ConverterService : OverlayService() {
     @Inject
     lateinit var inputMethodManager: InputMethodManager
 
-    private val removeBarLayoutParams: WindowManager.LayoutParams by lazy {
+    private fun removeBarLayoutParams(): WindowManager.LayoutParams {
         val params = WindowManager.LayoutParams()
         params.format = PixelFormat.RGBA_8888
         params.type = getOverlayType()
@@ -89,12 +88,10 @@ class ConverterService : OverlayService() {
         params.width = removeBar.layoutParams.width
         params.height = removeBar.layoutParams.height
         params.y = removeBarY()
-        params
+        return params
     }
 
-    private val screenSize: DisplayMetrics by lazy {
-        getScreenSize(windowManager)
-    }
+    private fun screenSize() = getScreenSize(windowManager)
 
     private val removeBarHeight: Int by lazy {
         resources.getDimensionPixelSize(R.dimen.remove_bar_height)
@@ -132,10 +129,10 @@ class ConverterService : OverlayService() {
         removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, removeBarHeight)
     }
 
-    private fun removeBarY() = screenSize.heightPixels - removeBarHeight
+    private fun removeBarY() = screenSize().heightPixels - removeBarHeight
 
     override fun onDragStarted(x: Float, y: Float) {
-        windowManager.addView(removeBar, removeBarLayoutParams)
+        windowManager.addView(removeBar, removeBarLayoutParams())
     }
 
     override fun onDragEnded(x: Float, y: Float) {
