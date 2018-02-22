@@ -1,6 +1,5 @@
 package com.rain.currency.ui.converter
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Handler
@@ -20,7 +19,6 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
-import com.bumptech.glide.Glide
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.OverlayService
@@ -30,17 +28,20 @@ import com.rain.currency.utils.getClicks
 import com.rain.currency.utils.getOverlayType
 import com.rain.currency.utils.getScreenSize
 import com.rain.currency.utils.getStreamText
+import com.rain.currency.utils.loadIcon
 import com.rain.currency.utils.setMoney
 import dagger.android.AndroidInjection
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ConverterService : OverlayService() {
-    private val DELAY_UNTIL_GAIN_FOCUS = 100L
     private val disposables = CompositeDisposable()
+    private var hidingDisposable: Disposable? = null
     private val handler = Handler()
     private lateinit var removeBar: FrameLayout
 
@@ -58,7 +59,6 @@ class ConverterService : OverlayService() {
     lateinit var btnMoney: ImageView
     @BindView(R.id.btnRetry)
     lateinit var btnRetry: TextView
-
     @BindView(R.id.ivBaseIcon)
     lateinit var ivBaseIcon: ImageView
     @BindView(R.id.ivTargetIcon)
@@ -123,7 +123,6 @@ class ConverterService : OverlayService() {
         }
     }
 
-    @SuppressLint("InflateParams")
     private fun setUpRemoveBar() {
         removeBar = LayoutInflater.from(this).inflate(R.layout.remove_bar, null) as FrameLayout
         removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, removeBarHeight)
@@ -133,10 +132,12 @@ class ConverterService : OverlayService() {
 
     override fun onDragStarted(x: Float, y: Float) {
         windowManager.addView(removeBar, removeBarLayoutParams())
+        focusMoneyButton()
     }
 
     override fun onDragEnded(x: Float, y: Float) {
         windowManager.removeView(removeBar)
+        blurMoneyButton()
     }
 
     override fun onDragMoved(x: Float, y: Float) {
@@ -145,7 +146,6 @@ class ConverterService : OverlayService() {
                 else R.color.light_red))
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private fun setUpMoneyButton() {
         btnMoney.setOnTouchListener { view, event ->
             if (event.rawY > removeBarY() - removeBarHeight && event.action == ACTION_UP) {
@@ -207,7 +207,7 @@ class ConverterService : OverlayService() {
             edtBase.requestFocus()
             handler.postDelayed({
                 inputMethodManager.showSoftInput(edtBase, 0)
-            }, DELAY_UNTIL_GAIN_FOCUS)
+            }, 100)
         } else {
             content.visibility = View.INVISIBLE
         }
@@ -216,25 +216,36 @@ class ConverterService : OverlayService() {
     private fun bindBaseCurrency(currencyInfo: CurrencyInfo) {
         tvBaseUnit.text = currencyInfo.unit
         tvBaseSymbol.text = currencyInfo.symbol
-        Glide.with(this)
-                .load(currencyInfo.icon)
-                .into(ivBaseIcon)
+        loadIcon(ivBaseIcon, currencyInfo.icon)
     }
 
     private fun bindTargetCurrency(currencyInfo: CurrencyInfo) {
         tvTargetUnit.text = currencyInfo.unit
         tvTargetSymbol.text = currencyInfo.symbol
-        Glide.with(this)
-                .load(currencyInfo.icon)
-                .into(ivTargetIcon)
+        loadIcon(ivTargetIcon, currencyInfo.icon)
     }
 
     private fun bindExpand(expand: Boolean) {
         if (expand) {
             showContent()
+            focusMoneyButton()
         } else {
             hideContent()
+            blurMoneyButton()
         }
+    }
+
+    private fun focusMoneyButton() {
+        hidingDisposable?.dispose()
+        btnMoney.alpha = 1f
+    }
+
+    private fun blurMoneyButton() {
+        hidingDisposable?.dispose()
+        hidingDisposable = Observable.just(0)
+                .delay(2, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ btnMoney.alpha = 0.25f }, Timber::e)
     }
 
     override fun onBackPressed(): Boolean {
@@ -253,6 +264,8 @@ class ConverterService : OverlayService() {
         }
         viewModel.unbind()
         disposables.dispose()
+        hidingDisposable?.dispose()
+        hidingDisposable = null
         super.onDestroy()
     }
 

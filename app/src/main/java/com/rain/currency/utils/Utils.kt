@@ -6,10 +6,13 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
+import android.support.annotation.DrawableRes
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
@@ -49,6 +52,12 @@ fun setMoney(editText: EditText, value: String) {
             setText(editText, "")
         }
     }
+}
+
+fun loadIcon(imageView: ImageView, @DrawableRes icon: Int) {
+    Glide.with(imageView.context)
+            .load(icon)
+            .into(imageView)
 }
 
 fun getOverlayType(): Int {

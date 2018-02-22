@@ -9,17 +9,17 @@
 
     <FrameLayout
         android:id="@+id/container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/floating_margin"
         android:background="@drawable/border"
-        android:elevation="@dimen/floating_margin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:elevation="@dimen/floating_margin">
 
         <LinearLayout
             android:id="@+id/content"
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:gravity="center"
             android:orientation="vertical"
             android:padding="@dimen/space_normal"
@@ -123,10 +123,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:gravity="center"
             android:text="@string/retry"
             android:textColor="@color/black"
             android:textSize="@dimen/size_large"
-            android:gravity="center"
             android:visibility="gone"
             tools:visibility="visible" />
     </FrameLayout>
@@ -142,5 +142,5 @@
         app:civ_border_color="@android:color/white"
         app:civ_border_width="1dp"
         app:civ_fill_color="@color/colorPrimary"
-        tools:visibility="gone" />
+        tools:visibility="visible" />
 </RelativeLayout>

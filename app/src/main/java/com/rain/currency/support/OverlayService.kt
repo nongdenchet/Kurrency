@@ -28,7 +28,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
     private var offsetY: Float = 0.toFloat()
     private var originalXPos: Int = 0
     private var originalYPos: Int = 0
-    private var moving: Boolean = false
+    protected var moving: Boolean = false
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -129,6 +129,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         } else if (event.action == ACTION_UP) {
             onDragEnded(x, y)
             if (moving) {
+                moving = false
                 return true
             }
         }

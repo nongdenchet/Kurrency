@@ -1,6 +1,5 @@
 package com.rain.currency.ui.converter
 
-import android.util.Log
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.CurrencyInfo
@@ -124,7 +123,6 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
     }
 
     fun setExpand(expand: Boolean) {
-        Log.d("Quan", Thread.currentThread().name)
         state.accept(reducer.expand(state.value, expand))
     }
 }
