@@ -18,10 +18,15 @@ open class UserCurrencyStore @Inject constructor(
         val DEFAULT = "USD"
     }
 
-    open fun storeCurrencies(base: String, target: String) {
+    open fun storeBaseUnit(value: String) {
         sharedPreferences.edit()
-                .putString(BASE, base)
-                .putString(TARGET, target)
+                .putString(BASE, value)
+                .apply()
+    }
+
+    open fun storeTargetUnit(value: String) {
+        sharedPreferences.edit()
+                .putString(TARGET, value)
                 .apply()
     }
 

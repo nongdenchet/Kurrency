@@ -13,13 +13,13 @@ import java.util.Date
 import javax.inject.Inject
 
 @ApplicationScope
-open class CurrencyRepo @Inject constructor(
+class CurrencyRepo @Inject constructor(
         private val currencyApi: CurrencyApi,
         private val userCurrencyStore: UserCurrencyStore
 ) {
     private var cache: Exchange? = null
 
-    open fun fetchExchange(useCache: Boolean = false): Single<Exchange> {
+    fun fetchExchange(useCache: Boolean = false): Single<Exchange> {
         if (useCache && cache != null) {
             return Single.just(cache)
         }
@@ -30,9 +30,9 @@ open class CurrencyRepo @Inject constructor(
                 .subscribeOn(Schedulers.io())
     }
 
-    open fun storeUserCurrencies(baseUnit: String, targetUnit: String) {
-        userCurrencyStore.storeCurrencies(baseUnit, targetUnit)
-    }
+    fun storeBaseUnit(value: String) = userCurrencyStore.storeBaseUnit(value)
+
+    fun storeTargetUnit(value: String) = userCurrencyStore.storeTargetUnit(value)
 
     private fun toExchange(liveCurrency: LiveCurrency): Exchange {
         val currencies = ArrayMap<String, Double>(liveCurrency.quotes.size)
@@ -43,7 +43,7 @@ open class CurrencyRepo @Inject constructor(
         return Exchange(liveCurrency.source, Date(liveCurrency.timestamp), currencies)
     }
 
-    open fun fetchLastCurrency(): Single<Currency> {
+    fun fetchLastCurrency(): Single<Currency> {
         return Single.just(userCurrencyStore.getCurrencies())
                 .map { Currency(baseUnit = it.first, targetUnit = it.second) }
     }

@@ -1,10 +1,32 @@
-package com.rain.currency.ui.converter
+package com.rain.currency.ui.converter.reducer
 
+import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeBase
+import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeBaseUnit
+import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeExpand
+import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeTarget
+import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeTargetUnit
+import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyContent
+import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyError
+import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyLoading
+import io.reactivex.functions.BiFunction
 import timber.log.Timber
 import java.text.NumberFormat
 
-class ConverterReducer {
+class ConverterReducer : BiFunction<ConverterState, ConverterCommand, ConverterState> {
     private val numberFormatter = NumberFormat.getNumberInstance()
+
+    override fun apply(prev: ConverterState, command: ConverterCommand): ConverterState {
+        return when (command) {
+            is CurrencyLoading -> loading(prev, true)
+            is CurrencyError -> loading(prev, false)
+            is CurrencyContent -> data(prev, command.data)
+            is ChangeBase -> changeBase(prev, command.value)
+            is ChangeTarget -> changeTarget(prev, command.value)
+            is ChangeBaseUnit -> changeBaseUnit(prev, command.value)
+            is ChangeTargetUnit -> changeTargetUnit(prev, command.value)
+            is ChangeExpand -> expand(prev, command.expand)
+        }
+    }
 
     private fun parseNumber(value: String): Double {
         return try {
@@ -15,7 +37,7 @@ class ConverterReducer {
         }.toDoubleOrNull() ?: -1.0
     }
 
-    fun changeBase(prev: ConverterState, value: String): ConverterState {
+    private fun changeBase(prev: ConverterState, value: String): ConverterState {
         prev.data?.let {
             convertBase(value, it.currency.baseUnit, it)?.let {
                 return prev.copy(data = it)
@@ -24,7 +46,7 @@ class ConverterReducer {
         return prev
     }
 
-    fun changeBaseUnit(prev: ConverterState, value: String): ConverterState {
+    private fun changeBaseUnit(prev: ConverterState, value: String): ConverterState {
         prev.data?.let {
             convertBase(it.currency.base, value, it)?.let {
                 return prev.copy(data = it)
@@ -33,7 +55,7 @@ class ConverterReducer {
         return prev
     }
 
-    fun changeTarget(prev: ConverterState, value: String): ConverterState {
+    private fun changeTarget(prev: ConverterState, value: String): ConverterState {
         prev.data?.let {
             convertTarget(value, it.currency.targetUnit, it)?.let {
                 return prev.copy(data = it)
@@ -42,7 +64,7 @@ class ConverterReducer {
         return prev
     }
 
-    fun changeTargetUnit(prev: ConverterState, value: String): ConverterState {
+    private fun changeTargetUnit(prev: ConverterState, value: String): ConverterState {
         prev.data?.let {
             val newCurrency = it.currency.copy(targetUnit = value)
             val data = ConverterState.Data(it.exchange, newCurrency)
@@ -94,7 +116,7 @@ class ConverterReducer {
         return null
     }
 
-    fun expand(prev: ConverterState, expand: Boolean): ConverterState {
+    private fun expand(prev: ConverterState, expand: Boolean): ConverterState {
         return prev.copy(expand = expand)
     }
 
@@ -103,11 +125,11 @@ class ConverterReducer {
         return String.format(format, value)
     }
 
-    fun data(prev: ConverterState, data: ConverterState.Data): ConverterState {
+    private fun data(prev: ConverterState, data: ConverterState.Data): ConverterState {
         return prev.copy(data = data, loading = false)
     }
 
-    fun loading(prev: ConverterState, loading: Boolean): ConverterState {
+    private fun loading(prev: ConverterState, loading: Boolean): ConverterState {
         return prev.copy(loading = loading)
     }
 }

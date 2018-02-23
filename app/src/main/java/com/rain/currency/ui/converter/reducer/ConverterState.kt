@@ -1,4 +1,4 @@
-package com.rain.currency.ui.converter
+package com.rain.currency.ui.converter.reducer
 
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange

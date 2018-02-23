@@ -1,5 +1,6 @@
 package com.rain.currency.ui.converter
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Handler
@@ -123,6 +124,7 @@ class ConverterService : OverlayService() {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun setUpRemoveBar() {
         removeBar = LayoutInflater.from(this).inflate(R.layout.remove_bar, null) as FrameLayout
         removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, removeBarHeight)
@@ -146,6 +148,7 @@ class ConverterService : OverlayService() {
                 else R.color.light_red))
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setUpMoneyButton() {
         btnMoney.setOnTouchListener { view, event ->
             if (event.rawY > removeBarY() - removeBarHeight && event.action == ACTION_UP) {
@@ -156,49 +159,34 @@ class ConverterService : OverlayService() {
         }
     }
 
-    private fun getTriggerClicks(): Observable<Any> {
-        return Observable.merge(
-                getClicks(btnRetry),
-                getClicks(btnMoney).doOnNext { viewModel.setExpand(true) }
-        ).startWith(0)
-    }
-
     private fun bindViewModel() {
         val input = ConverterViewModel.Input(
-                getTriggerClicks(),
+                getClicks(btnRetry),
+                getClicks(btnMoney),
                 getStreamText(edtBase),
                 getStreamText(edtTarget),
                 currencyPicker.getUnit(CurrencyType.BASE),
                 currencyPicker.getUnit(CurrencyType.TARGET)
         )
         val output = viewModel.bind(input)
-
-        disposables.add(output.baseResult
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ setMoney(edtBase, it) }, Timber::e))
-        disposables.add(output.targetResult
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ setMoney(edtTarget, it) }, Timber::e))
-        disposables.add(output.baseCurrency
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ bindBaseCurrency(it) }, Timber::e))
-        disposables.add(output.targetCurrency
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ bindTargetCurrency(it) }, Timber::e))
-        disposables.add(output.content
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ bindContent(it) }, Timber::e))
-        disposables.add(output.loading
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { if (it) View.VISIBLE else View.GONE }
-                .subscribe({ pbLoading.visibility = it }, Timber::e))
-        disposables.add(output.error
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { if (it) View.VISIBLE else View.GONE }
-                .subscribe({ btnRetry.visibility = it }, Timber::e))
-        disposables.add(output.expand
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ bindExpand(it) }, Timber::e))
+        disposables.addAll(
+                output.baseResult.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ setMoney(edtBase, it) }, Timber::e),
+                output.targetResult.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ setMoney(edtTarget, it) }, Timber::e),
+                output.baseCurrency.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ bindBaseCurrency(it) }, Timber::e),
+                output.targetCurrency.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ bindTargetCurrency(it) }, Timber::e),
+                output.showContent.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ bindContent(it) }, Timber::e),
+                output.loadingVisibility.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ pbLoading.visibility = it }, Timber::e),
+                output.errorVisibility.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ btnRetry.visibility = it }, Timber::e),
+                output.expand.observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ bindExpand(it) }, Timber::e)
+        )
     }
 
     private fun bindContent(value: Boolean) {
@@ -248,24 +236,16 @@ class ConverterService : OverlayService() {
                 .subscribe({ btnMoney.alpha = 0.25f }, Timber::e)
     }
 
-    override fun onBackPressed(): Boolean {
-        return if (viewModel.isExpand()) {
-            viewModel.setExpand(false)
-            true
-        } else {
-            super.onBackPressed()
-        }
-    }
+    override fun onBackPressed() = viewModel.onBackPressed()
 
     override fun onDestroy() {
-        currencyPicker.onDismiss = null
         if (removeBar.isAttachedToWindow) {
             windowManager.removeView(removeBar)
         }
+        currencyPicker.onDismiss = null
         viewModel.unbind()
         disposables.dispose()
         hidingDisposable?.dispose()
-        hidingDisposable = null
         super.onDestroy()
     }
 

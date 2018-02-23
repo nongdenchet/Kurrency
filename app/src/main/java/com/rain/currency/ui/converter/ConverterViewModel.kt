@@ -1,25 +1,34 @@
 package com.rain.currency.ui.converter
 
+import android.view.View
 import com.jakewharton.rxrelay2.BehaviorRelay
+import com.jakewharton.rxrelay2.PublishRelay
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.repo.CurrencyRepo
 import com.rain.currency.support.CurrencyMapper
+import com.rain.currency.ui.converter.reducer.ConverterCommand
+import com.rain.currency.ui.converter.reducer.ConverterReducer
+import com.rain.currency.ui.converter.reducer.ConverterState
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
                                      private val reducer: ConverterReducer,
                                      private val currencyMapper: CurrencyMapper) {
     private val state = BehaviorRelay.createDefault(ConverterState.INIT_STATE)
+    private val expandChange = PublishRelay.create<Boolean>()
     private val disposables = CompositeDisposable()
 
     class Input(
-            val loadTrigger: Observable<Any>,
+            val retryClicks: Observable<Any>,
+            val moneyClicks: Observable<Any>,
             val baseChange: Observable<String>,
             val targetChange: Observable<String>,
             val baseUnitChange: Observable<String>,
@@ -31,39 +40,43 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
             val targetResult: Observable<String>,
             val baseCurrency: Observable<CurrencyInfo>,
             val targetCurrency: Observable<CurrencyInfo>,
-            val loading: Observable<Boolean>,
-            val content: Observable<Boolean>,
-            val error: Observable<Boolean>,
+            val loadingVisibility: Observable<Int>,
+            val showContent: Observable<Boolean>,
+            val errorVisibility: Observable<Int>,
             val expand: Observable<Boolean>
     )
 
-    private fun fetchCurrency(): Observable<ConverterState> {
+    private fun fetchCurrency(): Observable<ConverterCommand> {
         return Single.zip(currencyRepo.fetchExchange(), currencyRepo.fetchLastCurrency(),
                 BiFunction<Exchange, Currency, ConverterState.Data> { exchange, currency ->
                     ConverterState.Data(exchange, currency)
                 })
                 .toObservable()
-                .map { reducer.data(state.value, it) }
-                .startWith(reducer.loading(state.value, true))
-                .onErrorReturn { reducer.loading(state.value, false) }
+                .map<ConverterCommand> { ConverterCommand.CurrencyContent(it) }
+                .startWith(ConverterCommand.CurrencyLoading())
+                .onErrorReturn { ConverterCommand.CurrencyError(it) }
     }
 
     fun bind(input: Input): Output {
-        disposables.add(input.loadTrigger
+        val moneyClicks = input.moneyClicks.share()
+        val loadTrigger = Observable.merge(input.retryClicks, moneyClicks)
+                .startWith(0)
                 .switchMap { fetchCurrency() }
-                .subscribe({ emitState(it) }, Timber::e))
-        disposables.add(input.baseChange
-                .map { reducer.changeBase(state.value, it) }
-                .subscribe({ emitState(it) }, Timber::e))
-        disposables.add(input.targetChange
-                .map { reducer.changeTarget(state.value, it) }
-                .subscribe({ emitState(it) }, Timber::e))
-        disposables.add(input.baseUnitChange
-                .map { reducer.changeBaseUnit(state.value, it) }
-                .subscribe({ emitState(it) }, Timber::e))
-        disposables.add(input.targetUnitChange
-                .map { reducer.changeTargetUnit(state.value, it) }
-                .subscribe({ emitState(it) }, Timber::e))
+        val commands = Observable.merge(listOf(loadTrigger,
+                expandChange.map { ConverterCommand.ChangeExpand(it) },
+                input.baseChange.map { ConverterCommand.ChangeBase(it) },
+                input.targetChange.map { ConverterCommand.ChangeTarget(it) },
+                input.baseUnitChange.map { ConverterCommand.ChangeBaseUnit(it) },
+                input.targetUnitChange.map { ConverterCommand.ChangeTargetUnit(it) }
+        ))
+
+        disposables.add(moneyClicks
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ expandChange.accept(true) }, Timber::e))
+        disposables.add(commands.scan(ConverterState.INIT_STATE, reducer)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ state.accept(it) }, Timber::e))
 
         return configureOutput()
     }
@@ -79,28 +92,31 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
                 .map { it.currency.baseUnit }
                 .map { currencyMapper.toInfo(it) }
                 .distinctUntilChanged()
+                .observeOn(Schedulers.io())
+                .doOnNext { currencyRepo.storeBaseUnit(it.unit) }
         val targetCurrency = getData()
                 .map { it.currency.targetUnit }
                 .map { currencyMapper.toInfo(it) }
                 .distinctUntilChanged()
-        val loading = state.filter { it.expand }
+                .observeOn(Schedulers.io())
+                .doOnNext { currencyRepo.storeTargetUnit(it.unit) }
+        val loadingVisibility = state.filter { it.expand }
                 .map { it.loading }
+                .map { if (it) View.VISIBLE else View.GONE }
                 .distinctUntilChanged()
-        val content = state.filter { it.expand }
+        val showContent = state.filter { it.expand }
                 .map { it.data != null && !it.loading }
                 .distinctUntilChanged()
-        val error = state.filter { it.expand }
+        val errorVisibility = state.filter { it.expand }
                 .map { it.data == null && !it.loading }
+                .map { if (it) View.VISIBLE else View.GONE }
                 .distinctUntilChanged()
         val expand = state
                 .map { it.expand }
                 .distinctUntilChanged()
 
-        return Output(baseResult, targetResult, baseCurrency, targetCurrency, loading, content, error, expand)
-    }
-
-    private fun emitState(newState: ConverterState) {
-        state.accept(newState)
+        return Output(baseResult, targetResult, baseCurrency, targetCurrency,
+                loadingVisibility, showContent, errorVisibility, expand)
     }
 
     private fun getData(): Observable<ConverterState.Data> {
@@ -109,20 +125,15 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
     }
 
     fun unbind() {
-        state.value.data?.let {
-            currencyRepo.storeUserCurrencies(
-                    it.currency.baseUnit,
-                    it.currency.targetUnit
-            )
-        }
         disposables.dispose()
     }
 
-    fun isExpand(): Boolean {
-        return state.value.expand
-    }
-
-    fun setExpand(expand: Boolean) {
-        state.accept(reducer.expand(state.value, expand))
+    fun onBackPressed(): Boolean {
+        return if (state.value.expand) {
+            expandChange.accept(false)
+            true
+        } else {
+            false
+        }
     }
 }

@@ -1,72 +1,80 @@
 package com.rain.currency.ui
 
 import android.support.v4.util.ArrayMap
+import android.view.View
 import com.jakewharton.rxrelay2.PublishRelay
-import com.rain.currency.data.local.UserCurrencyStore
 import com.rain.currency.data.model.Currency
+import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
-import com.rain.currency.data.network.CurrencyApi
 import com.rain.currency.data.repo.CurrencyRepo
 import com.rain.currency.support.CurrencyMapper
-import com.rain.currency.ui.converter.ConverterReducer
 import com.rain.currency.ui.converter.ConverterViewModel
-import io.reactivex.Observable
+import com.rain.currency.ui.converter.reducer.ConverterReducer
 import io.reactivex.Single
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.plugins.RxJavaPlugins
+import io.reactivex.schedulers.Schedulers
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
+import org.mockito.ArgumentMatchers
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.MockitoAnnotations
 import java.util.Date
 
 class ConverterViewModelTest {
     private lateinit var converterViewModel: ConverterViewModel
+    private val retryClicks = PublishRelay.create<Any>()
+    private val moneyClicks = PublishRelay.create<Any>()
     private val baseChange = PublishRelay.create<String>()
     private val targetChange = PublishRelay.create<String>()
     private val baseUnitChange = PublishRelay.create<String>()
     private val targetUnitChange = PublishRelay.create<String>()
-    private val userCurrencyStore = mock(UserCurrencyStore::class.java)
 
-    class CurrencyRepoStub constructor(userCurrencyStore: UserCurrencyStore)
-        : CurrencyRepo(mock(CurrencyApi::class.java), userCurrencyStore) {
-        override fun fetchExchange(useCache: Boolean): Single<Exchange> {
-            val currencies = ArrayMap<String, Double>()
-            currencies["USD"] = 1.0
-            currencies["VND"] = 1.0 / 20000
-            currencies["SGD"] = 1.0 / 2
-
-            return Single.fromCallable {
-                return@fromCallable Exchange("USD", Date(System.currentTimeMillis()), currencies)
-            }
-        }
-
-        override fun fetchLastCurrency(): Single<Currency> {
-            return Single.just(Pair("USD", "VND"))
-                    .map { Currency(baseUnit = it.first, targetUnit = it.second) }
-        }
-    }
+    @Mock
+    lateinit var currencyRepo: CurrencyRepo
+    @Mock
+    lateinit var currencyMapper: CurrencyMapper
 
     @Before
     fun setUp() {
+        MockitoAnnotations.initMocks(this)
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
+        RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
+        RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
+
+        val currencies = ArrayMap<String, Double>()
+        currencies["USD"] = 1.0
+        currencies["VND"] = 1.0 / 20000
+        currencies["SGD"] = 1.0 / 2
+
+        `when`(currencyRepo.fetchLastCurrency()).thenReturn(
+                Single.just(Pair("USD", "VND")).map { Currency(baseUnit = it.first, targetUnit = it.second) })
+        `when`(currencyRepo.fetchExchange(ArgumentMatchers.anyBoolean())).thenReturn(
+                Single.just(Exchange("USD", Date(System.currentTimeMillis()), currencies)))
+        `when`(currencyMapper.toInfo(ArgumentMatchers.anyString()))
+                .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
+
         converterViewModel = ConverterViewModel(
-                CurrencyRepoStub(userCurrencyStore),
+                currencyRepo,
                 ConverterReducer(),
-                mock(CurrencyMapper::class.java)
+                currencyMapper
         )
     }
 
-    private fun bind(trigger: Observable<Any> = Observable.just(1)): ConverterViewModel.Output {
-        return converterViewModel.bind(ConverterViewModel.Input(trigger,
+    private fun bind(): ConverterViewModel.Output {
+        return converterViewModel.bind(ConverterViewModel.Input(retryClicks, moneyClicks,
                 baseChange, targetChange, baseUnitChange, targetUnitChange))
     }
 
     @Test
     fun shouldEmitLoading() {
-        val trigger = PublishRelay.create<Int>()
-        val output = bind(trigger.map {})
-        converterViewModel.setExpand(true)
-        val observer = output.loading.test()
-        trigger.accept(1)
-        observer.assertValues(false, true, false)
+        val output = bind()
+        val observer = output.loadingVisibility.test()
+        moneyClicks.accept(1)
+        observer.assertValues(View.GONE, View.VISIBLE, View.GONE)
     }
 
     @Test
@@ -99,6 +107,22 @@ class ConverterViewModelTest {
     }
 
     @Test
+    fun shouldStoreWhenTargetUnitChange() {
+        val output = bind()
+        output.targetCurrency.subscribe()
+        targetUnitChange.accept("SGD")
+        verify(currencyRepo).storeTargetUnit("SGD")
+    }
+
+    @Test
+    fun shouldStoreWhenBaseUnitChange() {
+        val output = bind()
+        output.baseCurrency.subscribe()
+        baseUnitChange.accept("SGD")
+        verify(currencyRepo).storeBaseUnit("SGD")
+    }
+
+    @Test
     fun shouldEmitNewTargetWhenBaseUnitChange() {
         val output = bind()
         baseChange.accept("1")
@@ -128,10 +152,8 @@ class ConverterViewModelTest {
         observer.assertValues("", "0.05", "", "0.50")
     }
 
-    @Test
-    fun shouldStoreUserCurrency() {
-        bind()
-        converterViewModel.unbind()
-        verify(userCurrencyStore).storeCurrencies("USD", "VND")
+    @After
+    fun tearDown() {
+        RxAndroidPlugins.reset()
     }
 }

@@ -3,6 +3,7 @@ package com.rain.currency.ui.converter
 import com.rain.currency.data.repo.CurrencyRepo
 import com.rain.currency.di.scope.ConverterScope
 import com.rain.currency.support.CurrencyMapper
+import com.rain.currency.ui.converter.reducer.ConverterReducer
 import com.rain.currency.ui.picker.CurrencyPicker
 import dagger.Module
 import dagger.Provides
