@@ -34,8 +34,6 @@
 
         <activity
             android:name=".ui.setting.SettingActivity"
-            android:excludeFromRecents="true"
-            android:noHistory="true"
             android:theme="@style/Transparent"
             android:screenOrientation="portrait" />
 
