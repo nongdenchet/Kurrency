@@ -15,6 +15,7 @@ class SettingActivity : Activity() {
     lateinit var appManager: AppManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        overridePendingTransition(0, 0)
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
     }

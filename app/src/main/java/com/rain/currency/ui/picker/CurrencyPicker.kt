@@ -85,6 +85,7 @@ class CurrencyPicker(private val context: Context) {
         dialog.setOnDismissListener {
             onDismiss?.invoke()
             disposables.clear()
+            viewModel.unbind()
             edtSearch.setText("")
         }
         rvCurrencies.adapter = adapter

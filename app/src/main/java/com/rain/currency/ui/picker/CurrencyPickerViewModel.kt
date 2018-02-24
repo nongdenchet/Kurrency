@@ -13,7 +13,7 @@ import timber.log.Timber
 
 class CurrencyPickerViewModel(private val currencyRepo: CurrencyRepo,
                               private val currencyMapper: CurrencyMapper) {
-    private val currencies = BehaviorRelay.createDefault<List<CurrencyInfo>>(emptyList())
+    private val currencies = BehaviorRelay.create<List<CurrencyInfo>>()
     private val disposables = CompositeDisposable()
 
     class Input(
@@ -36,6 +36,10 @@ class CurrencyPickerViewModel(private val currencyRepo: CurrencyRepo,
                 .map { Pair(input.currencyType, it) }
 
         return Output(currencies.hide(), result)
+    }
+
+    fun unbind() {
+        disposables.clear()
     }
 
     private fun getUnits(): Single<List<String>> {

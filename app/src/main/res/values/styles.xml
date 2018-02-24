@@ -13,6 +13,13 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <style name="Transparent" parent="FullScreen">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <style name="TitleText">
         <item name="android:layout_width">@dimen/title_view_size</item>
         <item name="android:fontFamily">"sans-serif-medium"</item>
