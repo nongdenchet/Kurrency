@@ -126,7 +126,12 @@ class ConverterReducer : BiFunction<ConverterState, ConverterCommand, ConverterS
     }
 
     private fun data(prev: ConverterState, data: ConverterState.Data): ConverterState {
-        return prev.copy(data = data, loading = false)
+        val updatedData = if (prev.data != null) {
+            ConverterState.Data(exchange = data.exchange, currency = prev.data.currency)
+        } else {
+            data
+        }
+        return prev.copy(data = updatedData, loading = false)
     }
 
     private fun loading(prev: ConverterState, loading: Boolean): ConverterState {
