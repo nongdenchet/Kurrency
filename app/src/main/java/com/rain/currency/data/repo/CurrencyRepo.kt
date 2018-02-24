@@ -7,6 +7,7 @@ import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.network.CurrencyApi
 import com.rain.currency.data.network.LiveCurrency
 import com.rain.currency.di.application.ApplicationScope
+import com.rain.currency.utils.exponentialBackoff
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.util.Date
@@ -24,7 +25,7 @@ class CurrencyRepo @Inject constructor(
             return Single.just(cache)
         }
         return currencyApi.getLiveCurrency()
-                .retry(3)
+                .retryWhen(exponentialBackoff(3, 3))
                 .map { toExchange(it) }
                 .doOnSuccess { cache = it }
                 .subscribeOn(Schedulers.io())

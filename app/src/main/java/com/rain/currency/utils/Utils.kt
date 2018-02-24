@@ -15,8 +15,12 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function
+import org.reactivestreams.Publisher
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -38,6 +42,13 @@ fun toOverlayPermission(context: Context) {
         intent.action = ACTION_MANAGE_OVERLAY_PERMISSION
         intent.data = Uri.parse("package:${context.packageName}")
         context.startActivity(intent)
+    }
+}
+
+fun exponentialBackoff(times: Int, delay: Long): Function<in Flowable<Throwable>, out Publisher<*>> {
+    return Function { error ->
+        error.zipWith(Flowable.range(1, times), BiFunction<Throwable, Int, Int> { _, i -> i })
+                .flatMap { Flowable.timer(delay * it, TimeUnit.SECONDS) }
     }
 }
 
