@@ -20,7 +20,9 @@ android {
         }
 
         release {
-            minifyEnabled false
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
             buildConfigField "String", "ACCESS_TOKEN", AccessToken
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

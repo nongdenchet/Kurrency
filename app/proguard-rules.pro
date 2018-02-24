@@ -75,5 +75,5 @@
   public *;
 }
 
-# for DexGuard only
--keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+# Dagger
+-dontwarn com.google.errorprone.annotations.*
