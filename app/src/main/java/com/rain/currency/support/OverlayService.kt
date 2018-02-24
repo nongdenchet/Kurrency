@@ -113,7 +113,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
             onDragStarted(x, y)
         } else if (event.action == ACTION_MOVE) {
             val params = window.layoutParams as WindowManager.LayoutParams
-            val newX = (offsetX * 2 + x).toInt()
+            val newX = (offsetX + x).toInt()
             val newY = (offsetY * 2 + y).toInt()
 
             if (Math.abs(newX - originalXPos) < 1 && Math.abs(newY - originalYPos) < 1 && !moving) {
