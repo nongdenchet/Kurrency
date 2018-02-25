@@ -17,17 +17,13 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.WindowManager
 import android.widget.FrameLayout
-import com.rain.currency.R
 import com.rain.currency.utils.getOverlayType
-import com.rain.currency.utils.getScreenSize
 
 abstract class OverlayService : Service(), View.OnTouchListener {
     protected lateinit var windowManager: WindowManager
     protected lateinit var window: FrameLayout
-    private var offsetX: Float = 0.toFloat()
-    private var offsetY: Float = 0.toFloat()
-    private var originalXPos: Int = 0
-    private var originalYPos: Int = 0
+    private var originalX: Float = 0F
+    private var originalY: Float = 0F
     private var moving: Boolean = false
 
     override fun onBind(intent: Intent): IBinder? {
@@ -40,9 +36,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
 
     abstract fun container(window: ViewGroup): View
 
-    protected open fun onBackPressed(): Boolean {
-        return false
-    }
+    protected open fun onBackPressed() = false
 
     override fun onCreate() {
         super.onCreate()
@@ -58,8 +52,6 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         window.addView(container(window))
         window.isFocusable = true
 
-        val screenSize = getScreenSize(windowManager)
-        val buttonMoneySize = resources.getDimensionPixelSize(R.dimen.button_money_size)
         val params = WindowManager.LayoutParams()
         params.format = PixelFormat.RGBA_8888
         params.type = getOverlayType()
@@ -69,11 +61,14 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         params.width = window.layoutParams.width
         params.height = window.layoutParams.height
-        params.x = screenSize.widthPixels - buttonMoneySize
-        params.y = screenSize.heightPixels / 2 - buttonMoneySize / 2
+        params.x = getX()
+        params.y = getY()
 
         windowManager.addView(window, params)
     }
+
+    open fun getX() = 0
+    open fun getY() = 0
 
     protected fun unFocusWindow() {
         val params = window.layoutParams as WindowManager.LayoutParams
@@ -101,30 +96,22 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         val y = event.rawY
 
         if (event.action == ACTION_DOWN) {
-            moving = false
-
-            val location = IntArray(2)
-            view.getLocationOnScreen(location)
-            originalXPos = location[0]
-            originalYPos = location[1]
-            offsetX = originalXPos - x
-            offsetY = originalYPos - y
-
-            onDragStarted(x, y)
+            originalX = x
+            originalY = y
         } else if (event.action == ACTION_MOVE) {
-            val params = window.layoutParams as WindowManager.LayoutParams
-            val newX = (offsetX + x).toInt()
-            val newY = (offsetY * 2 + y).toInt()
+            if (!moving && (Math.abs(x - originalX) > 0.5 || Math.abs(y - originalY) > 0.5)) {
+                onDragStarted(x, y)
+                moving = true
+            }
 
-            if (Math.abs(newX - originalXPos) < 1 && Math.abs(newY - originalYPos) < 1 && !moving) {
+            if (!moving) {
                 return false
             }
 
-            params.x = newX
-            params.y = newY
+            val params = window.layoutParams as WindowManager.LayoutParams
+            params.x = (x - view.width).toInt()
+            params.y = (y - view.height).toInt()
             windowManager.updateViewLayout(window, params)
-            moving = true
-
             onDragMoved(x, y)
         } else if (event.action == ACTION_UP) {
             onDragEnded(x, y)
@@ -140,10 +127,8 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         super.onConfigurationChanged(newConfig)
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             val params = window.layoutParams as WindowManager.LayoutParams
-            val screenSize = getScreenSize(windowManager)
-            val buttonMoneySize = resources.getDimensionPixelSize(R.dimen.button_money_size)
-            params.x = screenSize.widthPixels
-            params.y = screenSize.heightPixels / 2 - buttonMoneySize / 2
+            params.x = getX()
+            params.y = getY()
             windowManager.updateViewLayout(window, params)
         }
     }

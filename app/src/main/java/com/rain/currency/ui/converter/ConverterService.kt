@@ -138,8 +138,14 @@ class ConverterService : OverlayService() {
     }
 
     override fun onDragEnded(x: Float, y: Float) {
-        windowManager.removeView(removeBar)
+        detachRemoveBar()
         blurMoneyButton()
+    }
+
+    private fun detachRemoveBar() {
+        if (removeBar.isAttachedToWindow) {
+            windowManager.removeView(removeBar)
+        }
     }
 
     override fun onDragMoved(x: Float, y: Float) {
@@ -239,9 +245,7 @@ class ConverterService : OverlayService() {
     override fun onBackPressed() = viewModel.onBackPressed()
 
     override fun onDestroy() {
-        if (removeBar.isAttachedToWindow) {
-            windowManager.removeView(removeBar)
-        }
+        detachRemoveBar()
         currencyPicker.onDismiss = null
         viewModel.unbind()
         disposables.dispose()
@@ -275,5 +279,11 @@ class ConverterService : OverlayService() {
     @OnClick(R.id.ivTargetIcon, R.id.tvTargetUnit)
     fun onTargetClick() {
         currencyPicker.show(CurrencyType.TARGET)
+    }
+
+    override fun getX() = screenSize().widthPixels
+
+    override fun getY(): Int {
+        return screenSize().heightPixels / 2 - resources.getDimensionPixelSize(R.dimen.button_money_size) / 2
     }
 }
