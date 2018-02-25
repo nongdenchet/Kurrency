@@ -23,6 +23,7 @@ import butterknife.OnClick
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.OverlayService
+import com.rain.currency.ui.menu.MenuHandler
 import com.rain.currency.ui.picker.CurrencyPicker
 import com.rain.currency.ui.picker.CurrencyType
 import com.rain.currency.utils.getClicks
@@ -79,6 +80,8 @@ class ConverterService : OverlayService() {
     lateinit var currencyPicker: CurrencyPicker
     @Inject
     lateinit var inputMethodManager: InputMethodManager
+    @Inject
+    lateinit var menuHandler: MenuHandler
 
     private fun removeBarLayoutParams(): WindowManager.LayoutParams {
         val params = WindowManager.LayoutParams()
@@ -114,6 +117,8 @@ class ConverterService : OverlayService() {
 
     private fun setUpEditText() {
         currencyPicker.onDismiss = this::onPickerDismiss
+        menuHandler.attach(edtBase)
+        menuHandler.attach(edtTarget)
     }
 
     private fun onPickerDismiss() {
@@ -133,8 +138,14 @@ class ConverterService : OverlayService() {
     private fun removeBarY() = screenSize().heightPixels - removeBarHeight
 
     override fun onDragStarted(x: Float, y: Float) {
-        windowManager.addView(removeBar, removeBarLayoutParams())
+        attachRemoveBar()
         focusMoneyButton()
+    }
+
+    private fun attachRemoveBar() {
+        if (!removeBar.isAttachedToWindow) {
+            windowManager.addView(removeBar, removeBarLayoutParams())
+        }
     }
 
     override fun onDragEnded(x: Float, y: Float) {
@@ -143,8 +154,10 @@ class ConverterService : OverlayService() {
     }
 
     private fun detachRemoveBar() {
-        if (removeBar.isAttachedToWindow) {
+        try {
             windowManager.removeView(removeBar)
+        } catch (e: IllegalArgumentException) {
+            // Ignore
         }
     }
 
@@ -246,6 +259,7 @@ class ConverterService : OverlayService() {
 
     override fun onDestroy() {
         detachRemoveBar()
+        menuHandler.dismiss()
         currencyPicker.onDismiss = null
         viewModel.unbind()
         disposables.dispose()
@@ -269,6 +283,7 @@ class ConverterService : OverlayService() {
         inputMethodManager.hideSoftInputFromWindow(edtBase.windowToken, 0)
         inputMethodManager.hideSoftInputFromWindow(edtTarget.windowToken, 0)
         unFocusWindow()
+        menuHandler.dismiss()
     }
 
     @OnClick(R.id.ivBaseIcon, R.id.tvBaseUnit)

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/floating_margin"
+        android:background="@drawable/border"
+        android:elevation="@dimen/floating_margin"
+        android:orientation="vertical"
+        tools:layout_height="100dp"
+        tools:layout_width="100dp" />
+</FrameLayout>

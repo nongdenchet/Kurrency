@@ -88,6 +88,7 @@
                 <TextView
                     android:id="@+id/tvTargetUnit"
                     style="@style/TitleText"
+                    android:textIsSelectable="true"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/space_medium"
                     tools:text="VND" />

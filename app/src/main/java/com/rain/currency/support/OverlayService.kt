@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.PixelFormat
-import android.os.IBinder
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -20,15 +19,13 @@ import android.widget.FrameLayout
 import com.rain.currency.utils.getOverlayType
 
 abstract class OverlayService : Service(), View.OnTouchListener {
+    private val MAX_CLICK_DURATION = 100L
     protected lateinit var windowManager: WindowManager
     protected lateinit var window: FrameLayout
-    private var originalX: Float = 0F
-    private var originalY: Float = 0F
     private var moving: Boolean = false
+    private var startClickTime = 0L
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return START_NOT_STICKY
@@ -96,10 +93,9 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         val y = event.rawY
 
         if (event.action == ACTION_DOWN) {
-            originalX = x
-            originalY = y
+            startClickTime = System.currentTimeMillis()
         } else if (event.action == ACTION_MOVE) {
-            if (!moving && (Math.abs(x - originalX) > 0.5 || Math.abs(y - originalY) > 0.5)) {
+            if (!moving && (System.currentTimeMillis() - startClickTime > MAX_CLICK_DURATION)) {
                 onDragStarted(x, y)
                 moving = true
             }

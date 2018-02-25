@@ -1,5 +1,6 @@
 package com.rain.currency.di.application
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
@@ -7,6 +8,7 @@ import android.content.pm.PackageManager
 import android.view.inputmethod.InputMethodManager
 import com.google.gson.Gson
 import com.rain.currency.di.NetworkModule
+import com.rain.currency.ui.menu.MenuHandler
 import dagger.Module
 import dagger.Provides
 
@@ -34,5 +36,17 @@ class AppModule {
     @ApplicationScope
     fun providePackageManager(context: Context): PackageManager {
         return context.packageManager
+    }
+
+    @Provides
+    @ApplicationScope
+    fun provideClipboardManager(context: Context): ClipboardManager {
+        return context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    }
+
+    @Provides
+    @ApplicationScope
+    fun provideMenuHandler(clipboardManager: ClipboardManager): MenuHandler {
+        return MenuHandler(clipboardManager)
     }
 }
