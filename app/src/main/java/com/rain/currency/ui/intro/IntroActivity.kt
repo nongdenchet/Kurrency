@@ -19,8 +19,8 @@ class IntroActivity : AppCompatActivity() {
     private val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        overridePendingTransition(0, 0)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_intro)
         if (hasOverlayPermission(this)) {
             finishIntro()
         } else {
