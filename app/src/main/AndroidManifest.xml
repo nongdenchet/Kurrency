@@ -34,8 +34,7 @@
 
         <activity
             android:name=".ui.setting.SettingActivity"
-            android:theme="@style/Transparent"
-            android:screenOrientation="portrait" />
+            android:theme="@style/Transparent" />
 
         <activity
             android:name=".ui.intro.IntroActivity"
