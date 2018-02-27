@@ -8,6 +8,7 @@ class ClearStrategy(private val editText: EditText) : MenuStrategy {
     override fun menuType() = MenuType.CLEAR
 
     override fun execute() {
+        editText.requestFocus()
         editText.setText("")
     }
 }

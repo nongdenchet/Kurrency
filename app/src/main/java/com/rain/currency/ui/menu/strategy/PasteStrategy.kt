@@ -30,6 +30,7 @@ class PasteStrategy(private val clipboardManager: ClipboardManager, private val 
             if (it.isNotBlank()) {
                 try {
                     numberFormatter.parse(it.toString())
+                    editText.requestFocus()
                     editText.setText(it)
                     editText.setSelection(it.length)
                 } catch (e: Exception) {
