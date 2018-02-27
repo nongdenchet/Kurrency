@@ -1,7 +1,7 @@
 package com.rain.currency.data.repo
 
 import android.support.v4.util.ArrayMap
-import com.rain.currency.data.local.UserCurrencyStore
+import com.rain.currency.data.local.CurrencyStore
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.network.CurrencyApi
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @ApplicationScope
 class CurrencyRepo @Inject constructor(
         private val currencyApi: CurrencyApi,
-        private val userCurrencyStore: UserCurrencyStore
+        private val currencyStore: CurrencyStore
 ) {
     private var cache: Exchange? = null
 
@@ -24,16 +24,27 @@ class CurrencyRepo @Inject constructor(
         if (useCache && cache != null) {
             return Single.just(cache)
         }
-        return currencyApi.getLiveCurrency()
-                .retryWhen(exponentialBackoff(3, 3))
-                .map { toExchange(it) }
+
+        return getRemoteCurrency()
+                .onErrorResumeNext { getLocalCurrency() }
                 .doOnSuccess { cache = it }
                 .subscribeOn(Schedulers.io())
     }
 
-    fun storeBaseUnit(value: String) = userCurrencyStore.storeBaseUnit(value)
+    private fun getLocalCurrency(): Single<Exchange> {
+        return currencyStore.getExchange()
+    }
 
-    fun storeTargetUnit(value: String) = userCurrencyStore.storeTargetUnit(value)
+    private fun getRemoteCurrency(): Single<Exchange> {
+        return currencyApi.getLiveCurrency()
+                .retryWhen(exponentialBackoff(3, 1))
+                .map { toExchange(it) }
+                .doOnSuccess { currencyStore.storeExchange(it) }
+    }
+
+    fun storeBaseUnit(value: String) = currencyStore.storeBaseUnit(value)
+
+    fun storeTargetUnit(value: String) = currencyStore.storeTargetUnit(value)
 
     private fun toExchange(liveCurrency: LiveCurrency): Exchange {
         val currencies = ArrayMap<String, Double>(liveCurrency.quotes.size)
@@ -45,7 +56,7 @@ class CurrencyRepo @Inject constructor(
     }
 
     fun fetchLastCurrency(): Single<Currency> {
-        return Single.just(userCurrencyStore.getCurrencies())
+        return Single.just(currencyStore.getCurrencies())
                 .map { Currency(baseUnit = it.first, targetUnit = it.second) }
     }
 }
