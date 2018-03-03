@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:padding="@dimen/space_normal">
 
     <EditText
         android:id="@+id/edtSearch"
         style="@style/Text.EditText"
+        android:textCursorDrawable="@null"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"

@@ -3,10 +3,13 @@ package com.rain.currency.ui.menu
 import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
-import android.os.Build
+import android.graphics.drawable.ColorDrawable
+import android.support.v4.content.ContextCompat
+import android.support.v4.widget.PopupWindowCompat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -63,23 +66,23 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
             dismiss()
 
             popupWindow = PopupWindow(context)
-            popupWindow?.run {
-                contentView = createView(context, menus)
-                animationStyle = R.style.PopupMenu
-                isOutsideTouchable = true
-                isFocusable = true
-                inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    windowLayoutType = getOverlayType()
-                }
-                setBackgroundDrawable(null)
+            popupWindow?.let { popup ->
+                popup.contentView = createView(context, menus)
+                popup.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                popup.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                popup.animationStyle = R.style.PopupMenu
+                popup.isOutsideTouchable = true
+                popup.isFocusable = true
+                popup.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
+                popup.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent)))
+                PopupWindowCompat.setWindowLayoutType(popup, getOverlayType())
+                PopupWindowCompat.setOverlapAnchor(popup, true)
 
                 val locations = IntArray(2)
                 editText.getLocationOnScreen(locations)
                 val x = locations[0] + editText.width - estimateWidth + margin * 2
                 val y = locations[1] - editText.height - estimateHeight * menus.size - margin
-                showAtLocation(editText, Gravity.NO_GRAVITY, x, y)
+                popup.showAtLocation(editText, Gravity.NO_GRAVITY, x, y)
             }
 
             return@setOnLongClickListener true

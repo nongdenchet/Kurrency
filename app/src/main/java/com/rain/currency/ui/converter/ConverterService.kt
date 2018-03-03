@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Handler
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.ViewCompat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_UP
@@ -143,7 +144,7 @@ class ConverterService : OverlayService() {
     }
 
     private fun attachRemoveBar() {
-        if (!removeBar.isAttachedToWindow) {
+        if (!ViewCompat.isAttachedToWindow(removeBar)) {
             windowManager.addView(removeBar, removeBarLayoutParams())
         }
     }

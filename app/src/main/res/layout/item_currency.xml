@@ -24,8 +24,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/space_normal"
+        android:layout_marginLeft="@dimen/space_normal"
         android:layout_toEndOf="@+id/ivIcon"
+        android:layout_toRightOf="@+id/ivIcon"
         android:layout_toStartOf="@+id/tvSymbol"
+        android:layout_toLeftOf="@id/tvSymbol"
         tools:text="SGD" />
 
     <TextView
@@ -34,6 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:gravity="center"
         tools:text="$" />
 </RelativeLayout>
