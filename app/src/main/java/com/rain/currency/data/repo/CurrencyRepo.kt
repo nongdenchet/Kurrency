@@ -7,6 +7,7 @@ import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.network.CurrencyApi
 import com.rain.currency.data.network.LiveCurrency
 import com.rain.currency.di.application.ApplicationScope
+import com.rain.currency.support.NetworkManager
 import com.rain.currency.utils.exponentialBackoff
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -15,6 +16,7 @@ import javax.inject.Inject
 
 @ApplicationScope
 class CurrencyRepo @Inject constructor(
+        private val networkManager: NetworkManager,
         private val currencyApi: CurrencyApi,
         private val currencyStore: CurrencyStore
 ) {
@@ -25,10 +27,16 @@ class CurrencyRepo @Inject constructor(
             return Single.just(cache)
         }
 
-        return getRemoteCurrency()
-                .onErrorResumeNext { getLocalCurrency() }
-                .doOnSuccess { cache = it }
+        return getCurrency().doOnSuccess { cache = it }
                 .subscribeOn(Schedulers.io())
+    }
+
+    private fun getCurrency(): Single<Exchange> {
+        return if (networkManager.isNetworkAvailable()) {
+            getRemoteCurrency().onErrorResumeNext { getLocalCurrency() }
+        } else {
+            getLocalCurrency()
+        }
     }
 
     private fun getLocalCurrency(): Single<Exchange> {
@@ -52,6 +60,7 @@ class CurrencyRepo @Inject constructor(
         for (currency in liveCurrency.quotes) {
             currencies[currency.key.substring(3)] = 1.0 / currency.value
         }
+
         return Exchange(liveCurrency.source, Date(liveCurrency.timestamp), currencies)
     }
 
