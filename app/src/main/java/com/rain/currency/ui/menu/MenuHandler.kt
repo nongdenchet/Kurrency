@@ -82,7 +82,7 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
                 editText.getLocationOnScreen(locations)
                 val x = locations[0] + editText.width - estimateWidth + margin * 2
                 val y = locations[1] - editText.height - estimateHeight * menus.size - margin
-                popup.showAtLocation(editText, Gravity.NO_GRAVITY, x, y)
+                popup.showAtLocation(editText, Gravity.NO_GRAVITY, x, if (y > 0) y else 0)
             }
 
             return@setOnLongClickListener true
