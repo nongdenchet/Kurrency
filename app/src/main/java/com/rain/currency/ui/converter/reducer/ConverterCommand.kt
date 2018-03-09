@@ -1,8 +1,10 @@
 package com.rain.currency.ui.converter.reducer
 
+import com.rain.currency.domain.ConverterData
+
 sealed class ConverterCommand {
 
-    class CurrencyContent(val data: ConverterState.Data) : ConverterCommand()
+    class CurrencyContent(val data: ConverterData) : ConverterCommand()
 
     class CurrencyLoading : ConverterCommand()
 

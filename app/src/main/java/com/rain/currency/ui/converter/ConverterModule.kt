@@ -2,6 +2,7 @@ package com.rain.currency.ui.converter
 
 import com.rain.currency.data.repo.CurrencyRepo
 import com.rain.currency.di.scope.ConverterScope
+import com.rain.currency.domain.ConverterInteractor
 import com.rain.currency.support.CurrencyMapper
 import com.rain.currency.ui.converter.reducer.ConverterReducer
 import com.rain.currency.ui.picker.CurrencyPicker
@@ -27,7 +28,13 @@ class ConverterModule {
 
     @Provides
     @ConverterScope
-    fun provideConverterReducer(): ConverterReducer {
-        return ConverterReducer()
+    fun provideConverterReducer(interactor: ConverterInteractor): ConverterReducer {
+        return ConverterReducer(interactor)
+    }
+
+    @Provides
+    @ConverterScope
+    fun provideConverterInteractor(): ConverterInteractor {
+        return ConverterInteractor()
     }
 }

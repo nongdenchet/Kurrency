@@ -7,6 +7,7 @@ import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.repo.CurrencyRepo
+import com.rain.currency.domain.ConverterData
 import com.rain.currency.support.CurrencyMapper
 import com.rain.currency.ui.converter.reducer.ConverterCommand
 import com.rain.currency.ui.converter.reducer.ConverterReducer
@@ -48,8 +49,8 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
 
     private fun fetchCurrency(): Observable<ConverterCommand> {
         return Single.zip(currencyRepo.fetchExchange(), currencyRepo.fetchLastCurrency(),
-                BiFunction<Exchange, Currency, ConverterState.Data> { exchange, currency ->
-                    ConverterState.Data(exchange, currency)
+                BiFunction<Exchange, Currency, ConverterData> { exchange, currency ->
+                    ConverterData(exchange, currency)
                 })
                 .toObservable()
                 .map<ConverterCommand> { ConverterCommand.CurrencyContent(it) }
@@ -62,7 +63,8 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
         val loadTrigger = Observable.merge(input.retryClicks, moneyClicks)
                 .startWith(0)
                 .switchMap { fetchCurrency() }
-        val commands = Observable.merge(listOf(loadTrigger,
+        val commands = Observable.merge(
+                listOf(loadTrigger,
                 expandChange.map { ConverterCommand.ChangeExpand(it) },
                 input.baseChange.map { ConverterCommand.ChangeBase(it) },
                 input.targetChange.map { ConverterCommand.ChangeTarget(it) },
@@ -119,7 +121,7 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
                 loadingVisibility, showContent, errorVisibility, expand)
     }
 
-    private fun getData(): Observable<ConverterState.Data> {
+    private fun getData(): Observable<ConverterData> {
         return state.filter { it.data != null }
                 .map { it.data!! }
     }

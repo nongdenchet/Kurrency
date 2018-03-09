@@ -1,12 +1,9 @@
 package com.rain.currency.ui.converter.reducer
 
-import com.rain.currency.data.model.Currency
-import com.rain.currency.data.model.Exchange
+import com.rain.currency.domain.ConverterData
 
-data class ConverterState(val data: Data? = null, val loading: Boolean = false, val expand: Boolean = false) {
+data class ConverterState(val data: ConverterData? = null, val loading: Boolean = false, val expand: Boolean = false) {
     companion object {
         val INIT_STATE = ConverterState()
     }
-
-    class Data(val exchange: Exchange, val currency: Currency)
 }

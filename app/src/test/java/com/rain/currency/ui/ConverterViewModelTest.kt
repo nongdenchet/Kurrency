@@ -7,6 +7,7 @@ import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.repo.CurrencyRepo
+import com.rain.currency.domain.ConverterInteractor
 import com.rain.currency.support.CurrencyMapper
 import com.rain.currency.ui.converter.ConverterViewModel
 import com.rain.currency.ui.converter.reducer.ConverterReducer
@@ -59,7 +60,7 @@ class ConverterViewModelTest {
 
         converterViewModel = ConverterViewModel(
                 currencyRepo,
-                ConverterReducer(),
+                ConverterReducer(ConverterInteractor()),
                 currencyMapper
         )
     }
