@@ -5,7 +5,7 @@ import com.rain.currency.di.scope.ConverterScope
 import com.rain.currency.domain.ConverterInteractor
 import com.rain.currency.support.CurrencyMapper
 import com.rain.currency.ui.converter.reducer.ConverterReducer
-import com.rain.currency.ui.picker.CurrencyPicker
+import com.rain.currency.ui.picker.CurrencyPickerDialog
 import dagger.Module
 import dagger.Provides
 
@@ -22,8 +22,8 @@ class ConverterModule {
 
     @Provides
     @ConverterScope
-    fun provideCurrencyPicker(service: ConverterService): CurrencyPicker {
-        return CurrencyPicker(service)
+    fun provideCurrencyPicker(service: ConverterService): CurrencyPickerDialog {
+        return CurrencyPickerDialog(service)
     }
 
     @Provides

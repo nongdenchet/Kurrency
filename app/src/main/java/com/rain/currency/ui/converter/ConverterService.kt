@@ -25,7 +25,7 @@ import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.OverlayService
 import com.rain.currency.ui.menu.MenuHandler
-import com.rain.currency.ui.picker.CurrencyPicker
+import com.rain.currency.ui.picker.CurrencyPickerDialog
 import com.rain.currency.ui.picker.CurrencyType
 import com.rain.currency.utils.getClicks
 import com.rain.currency.utils.getOverlayType
@@ -78,7 +78,7 @@ class ConverterService : OverlayService() {
     @Inject
     lateinit var viewModel: ConverterViewModel
     @Inject
-    lateinit var currencyPicker: CurrencyPicker
+    lateinit var currencyPicker: CurrencyPickerDialog
     @Inject
     lateinit var inputMethodManager: InputMethodManager
     @Inject

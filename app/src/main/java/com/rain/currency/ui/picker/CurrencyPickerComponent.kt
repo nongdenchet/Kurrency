@@ -6,5 +6,5 @@ import dagger.Subcomponent
 @CurrencyPickerScope
 @Subcomponent(modules = arrayOf(CurrencyPickerModule::class))
 interface CurrencyPickerComponent {
-    fun inject(currencyPicker: CurrencyPicker)
+    fun inject(currencyPicker: CurrencyPickerDialog)
 }

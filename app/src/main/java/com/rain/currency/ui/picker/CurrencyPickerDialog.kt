@@ -24,7 +24,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @SuppressLint("InflateParams")
-class CurrencyPicker(private val context: Context) {
+class CurrencyPickerDialog(private val context: Context) {
     private val result = PublishRelay.create<Pair<CurrencyType, CurrencyInfo>>()
     private val DELAY_UNTIL_GAIN_FOCUS = 100L
     private val disposables = CompositeDisposable()
