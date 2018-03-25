@@ -14,7 +14,7 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
@@ -39,6 +39,7 @@
 -keepattributes Signature
 # For using GSON @Expose annotation
 -keepattributes *Annotation*
+-keep public class * extends java.lang.Exception
 # Gson specific classes
 -keep class sun.misc.Unsafe { *; }
 #-keep class com.google.gson.stream.** { *; }
@@ -77,3 +78,7 @@
 
 # Dagger
 -dontwarn com.google.errorprone.annotations.*
+
+# Crashlytics
+-keep class com.crashlytics.** { *; }
+-dontwarn com.crashlytics.**
