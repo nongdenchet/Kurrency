@@ -2,19 +2,13 @@ package com.rain.currency.ui.converter
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.PixelFormat
 import android.os.Handler
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -28,7 +22,6 @@ import com.rain.currency.ui.menu.MenuHandler
 import com.rain.currency.ui.picker.CurrencyPickerDialog
 import com.rain.currency.ui.picker.CurrencyType
 import com.rain.currency.utils.getClicks
-import com.rain.currency.utils.getOverlayType
 import com.rain.currency.utils.getScreenSize
 import com.rain.currency.utils.getStreamText
 import com.rain.currency.utils.loadIcon
@@ -46,7 +39,9 @@ class ConverterService : OverlayService() {
     private val disposables = CompositeDisposable()
     private var hidingDisposable: Disposable? = null
     private val handler = Handler()
-    private lateinit var removeBar: FrameLayout
+
+    private lateinit var background: Background
+    private lateinit var removeBar: RemoveBar
 
     @BindView(R.id.pbLoading)
     lateinit var pbLoading: ProgressBar
@@ -84,36 +79,22 @@ class ConverterService : OverlayService() {
     @Inject
     lateinit var menuHandler: MenuHandler
 
-    private fun removeBarLayoutParams(): WindowManager.LayoutParams {
-        val params = WindowManager.LayoutParams()
-        params.format = PixelFormat.RGBA_8888
-        params.type = getOverlayType()
-        params.gravity = Gravity.TOP or Gravity.START
-        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        params.width = removeBar.layoutParams.width
-        params.height = removeBar.layoutParams.height
-        params.y = removeBarY()
-        return params
-    }
-
     private fun screenSize() = getScreenSize(windowManager)
-
-    private val removeBarHeight: Int by lazy {
-        resources.getDimensionPixelSize(R.dimen.remove_bar_height)
-    }
 
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
         ButterKnife.bind(this, window)
-        setUpView()
+        setUpMoneyButton()
+        setUpEditText()
         bindViewModel()
     }
 
-    private fun setUpView() {
-        setUpMoneyButton()
-        setUpRemoveBar()
-        setUpEditText()
+    override fun initialize() {
+        background = Background(this)
+        background.setOnClickListener { viewModel.onBackPressed() }
+        background.attach()
+        removeBar = RemoveBar(this)
     }
 
     private fun setUpEditText() {
@@ -130,48 +111,24 @@ class ConverterService : OverlayService() {
         }
     }
 
-    @SuppressLint("InflateParams")
-    private fun setUpRemoveBar() {
-        removeBar = LayoutInflater.from(this).inflate(R.layout.remove_bar, null) as FrameLayout
-        removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, removeBarHeight)
-    }
-
-    private fun removeBarY() = screenSize().heightPixels - removeBarHeight
-
     override fun onDragStarted(x: Float, y: Float) {
-        attachRemoveBar()
+        removeBar.attach()
         focusMoneyButton()
     }
 
-    private fun attachRemoveBar() {
-        if (!ViewCompat.isAttachedToWindow(removeBar)) {
-            windowManager.addView(removeBar, removeBarLayoutParams())
-        }
-    }
-
     override fun onDragEnded(x: Float, y: Float) {
-        detachRemoveBar()
+        removeBar.detach()
         blurMoneyButton()
     }
 
-    private fun detachRemoveBar() {
-        try {
-            windowManager.removeView(removeBar)
-        } catch (e: IllegalArgumentException) {
-            // Ignore
-        }
-    }
-
     override fun onDragMoved(x: Float, y: Float) {
-        removeBar.setBackgroundColor(ContextCompat.getColor(this,
-                if (y > removeBarY() - removeBarHeight) R.color.red
-                else R.color.light_red))
+        removeBar.update(x, y)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setUpMoneyButton() {
         btnMoney.setOnTouchListener { view, event ->
-            if (event.rawY > removeBarY() - removeBarHeight && event.action == ACTION_UP) {
+            if (event.rawY > removeBar.getY() - removeBar.height && event.action == ACTION_UP) {
                 stopService(Intent(this, ConverterService::class.java))
                 return@setOnTouchListener true
             }
@@ -237,9 +194,11 @@ class ConverterService : OverlayService() {
         if (expand) {
             showContent()
             focusMoneyButton()
+            background.activateBackground()
         } else {
             hideContent()
             blurMoneyButton()
+            background.deactivateBackground()
         }
     }
 
@@ -259,7 +218,8 @@ class ConverterService : OverlayService() {
     override fun onBackPressed() = viewModel.onBackPressed()
 
     override fun onDestroy() {
-        detachRemoveBar()
+        removeBar.detach()
+        background.detach()
         menuHandler.dismiss()
         currencyPicker.onDismiss = null
         viewModel.unbind()
@@ -299,7 +259,5 @@ class ConverterService : OverlayService() {
 
     override fun getX() = screenSize().widthPixels
 
-    override fun getY(): Int {
-        return screenSize().heightPixels / 2 - resources.getDimensionPixelSize(R.dimen.button_money_size) / 2
-    }
+    override fun getY()= screenSize().heightPixels / 2 - resources.getDimensionPixelSize(R.dimen.button_money_size) / 2
 }

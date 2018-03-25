@@ -38,6 +38,8 @@ abstract class OverlayService : Service(), View.OnTouchListener {
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        initialize()
+
         window = object : FrameLayout(this) {
             override fun dispatchKeyEvent(event: KeyEvent): Boolean {
                 return if (event.keyCode == KeyEvent.KEYCODE_BACK && onBackPressed()) {
@@ -63,6 +65,8 @@ abstract class OverlayService : Service(), View.OnTouchListener {
 
         windowManager.addView(window, params)
     }
+
+    abstract fun initialize()
 
     open fun getX() = 0
     open fun getY() = 0
