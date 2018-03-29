@@ -15,6 +15,7 @@ import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import com.jakewharton.rxrelay2.PublishRelay
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.OverlayService
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ConverterService : OverlayService() {
+    private val backClicks = PublishRelay.create<Any>()
     private val disposables = CompositeDisposable()
     private var hidingDisposable: Disposable? = null
     private val handler = Handler()
@@ -92,7 +94,7 @@ class ConverterService : OverlayService() {
 
     override fun initialize() {
         background = Background(this)
-        background.setOnClickListener { viewModel.onBackPressed() }
+        background.setOnClickListener { backClicks.accept(1) }
         background.attach()
         removeBar = RemoveBar(this)
     }
@@ -143,7 +145,8 @@ class ConverterService : OverlayService() {
                 getStreamText(edtBase),
                 getStreamText(edtTarget),
                 currencyPicker.getUnit(CurrencyType.BASE),
-                currencyPicker.getUnit(CurrencyType.TARGET)
+                currencyPicker.getUnit(CurrencyType.TARGET),
+                backClicks.hide()
         )
         val output = viewModel.bind(input)
         disposables.addAll(
@@ -215,7 +218,10 @@ class ConverterService : OverlayService() {
                 .subscribe({ btnMoney.alpha = 0.25f }, Timber::e)
     }
 
-    override fun onBackPressed() = viewModel.onBackPressed()
+    override fun onBackPressed(): Boolean {
+        backClicks.accept(1)
+        return true
+    }
 
     override fun onDestroy() {
         removeBar.detach()

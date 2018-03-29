@@ -2,7 +2,6 @@ package com.rain.currency.ui.converter
 
 import android.view.View
 import com.jakewharton.rxrelay2.BehaviorRelay
-import com.jakewharton.rxrelay2.PublishRelay
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
@@ -15,7 +14,7 @@ import com.rain.currency.ui.converter.reducer.ConverterState
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -24,8 +23,7 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
                                      private val reducer: ConverterReducer,
                                      private val currencyMapper: CurrencyMapper) {
     private val state = BehaviorRelay.createDefault(ConverterState.INIT_STATE)
-    private val expandChange = PublishRelay.create<Boolean>()
-    private val disposables = CompositeDisposable()
+    private var disposable: Disposable? = null
 
     class Input(
             val retryClicks: Observable<Any>,
@@ -33,7 +31,8 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
             val baseChange: Observable<String>,
             val targetChange: Observable<String>,
             val baseUnitChange: Observable<String>,
-            val targetUnitChange: Observable<String>
+            val targetUnitChange: Observable<String>,
+            val backClicks: Observable<Any>
     )
 
     class Output(
@@ -60,25 +59,27 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
 
     fun bind(input: Input): Output {
         val moneyClicks = input.moneyClicks.share()
+        val expandChange = Observable.merge(
+                moneyClicks.map { true },
+                input.backClicks.withLatestFrom(state.filter { it.expand },
+                        BiFunction { _, _ -> false })
+        )
         val loadTrigger = Observable.merge(input.retryClicks, moneyClicks)
                 .startWith(0)
-                .switchMap { fetchCurrency() }
-        val commands = Observable.merge(
-                listOf(loadTrigger,
+
+        val commands = Observable.merge(listOf(
                 expandChange.map { ConverterCommand.ChangeExpand(it) },
+                loadTrigger.switchMap { fetchCurrency() },
                 input.baseChange.map { ConverterCommand.ChangeBase(it) },
                 input.targetChange.map { ConverterCommand.ChangeTarget(it) },
                 input.baseUnitChange.map { ConverterCommand.ChangeBaseUnit(it) },
                 input.targetUnitChange.map { ConverterCommand.ChangeTargetUnit(it) }
         ))
 
-        disposables.add(moneyClicks
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ expandChange.accept(true) }, Timber::e))
-        disposables.add(commands.scan(ConverterState.INIT_STATE, reducer)
+        disposable = commands.scan(ConverterState.INIT_STATE, reducer)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ state.accept(it) }, Timber::e))
+                .subscribe({ state.accept(it) }, Timber::e)
 
         return configureOutput()
     }
@@ -127,15 +128,7 @@ class ConverterViewModel constructor(private val currencyRepo: CurrencyRepo,
     }
 
     fun unbind() {
-        disposables.dispose()
-    }
-
-    fun onBackPressed(): Boolean {
-        return if (state.value.expand) {
-            expandChange.accept(false)
-            true
-        } else {
-            false
-        }
+        disposable?.dispose()
+        disposable = null
     }
 }

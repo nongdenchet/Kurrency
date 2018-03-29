@@ -88,7 +88,7 @@ fun getStreamText(editText: EditText): Observable<String> {
     return RxTextView.textChangeEvents(editText)
             .filter { editText.isFocused }
             .distinctUntilChanged()
-            .debounce(300, TimeUnit.MILLISECONDS)
+            .sample(300, TimeUnit.MILLISECONDS)
             .map { it.text() }
             .map { it.toString() }
             .subscribeOn(AndroidSchedulers.mainThread())
