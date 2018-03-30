@@ -65,7 +65,7 @@ class NetworkModule {
     private fun cacheInterceptor(networkManager: NetworkManager): Interceptor {
         return Interceptor {
             val originalResponse = it.proceed(it.request())
-            val maxAge = 60 * 60 * 24
+            val maxAge = 60 * 30
 
             return@Interceptor if (networkManager.isNetworkAvailable()) {
                 originalResponse.newBuilder()
