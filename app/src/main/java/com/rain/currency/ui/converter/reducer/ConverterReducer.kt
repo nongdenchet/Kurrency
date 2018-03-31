@@ -1,73 +1,28 @@
 package com.rain.currency.ui.converter.reducer
 
 import com.rain.currency.domain.ConverterData
-import com.rain.currency.domain.ConverterInteractor
-import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeBase
-import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeBaseUnit
-import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeExpand
-import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeTarget
-import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeTargetUnit
-import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyContent
-import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyError
-import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyLoading
+import com.rain.currency.ui.converter.reducer.ConverterCommand.*
 import io.reactivex.functions.BiFunction
+import timber.log.Timber
 
-class ConverterReducer(private val interactor: ConverterInteractor) : BiFunction<ConverterState, ConverterCommand, ConverterState> {
-
+class ConverterReducer : BiFunction<ConverterState, ConverterCommand, ConverterState> {
     override fun apply(prev: ConverterState, command: ConverterCommand): ConverterState {
         return when (command) {
             is CurrencyLoading -> loading(prev, true)
-            is CurrencyError -> loading(prev, false)
+            is CurrencyError -> error(prev, command.error)
+            is CurrencyResult -> result(prev, command.data)
             is CurrencyContent -> data(prev, command.data)
-            is ChangeBase -> changeBase(prev, command.value)
-            is ChangeTarget -> changeTarget(prev, command.value)
-            is ChangeBaseUnit -> changeBaseUnit(prev, command.value)
-            is ChangeTargetUnit -> changeTargetUnit(prev, command.value)
             is ChangeExpand -> expand(prev, command.expand)
         }
     }
 
-    private fun changeBase(prev: ConverterState, value: String): ConverterState {
-        prev.data?.let {
-            interactor.convertBase(value, it.currency.baseUnit, it)?.let {
-                return prev.copy(data = it)
-            }
-        }
-
-        return prev
+    private fun error(prev: ConverterState, error: Throwable): ConverterState {
+        Timber.e(error)
+        return loading(prev, false)
     }
 
-    private fun changeBaseUnit(prev: ConverterState, value: String): ConverterState {
-        prev.data?.let {
-            interactor.convertBase(it.currency.base, value, it)?.let {
-                return prev.copy(data = it)
-            }
-        }
-
-        return prev
-    }
-
-    private fun changeTarget(prev: ConverterState, value: String): ConverterState {
-        prev.data?.let {
-            interactor.convertTarget(value, it.currency.targetUnit, it)?.let {
-                return prev.copy(data = it)
-            }
-        }
-
-        return prev
-    }
-
-    private fun changeTargetUnit(prev: ConverterState, value: String): ConverterState {
-        prev.data?.let {
-            val newCurrency = it.currency.copy(targetUnit = value)
-            val data = ConverterData(it.exchange, newCurrency)
-
-            interactor.convertBase(newCurrency.base, newCurrency.baseUnit, data)?.let {
-                return prev.copy(data = it)
-            }
-        }
-
-        return prev
+    private fun result(prev: ConverterState, data: ConverterData): ConverterState {
+        return prev.copy(data = data)
     }
 
     private fun expand(prev: ConverterState, expand: Boolean): ConverterState {

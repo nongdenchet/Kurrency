@@ -46,9 +46,10 @@ class ConverterViewModelTest {
         mockSchedulers()
         mockData()
         converterViewModel = ConverterViewModel(
-                currencyRepo,
-                ConverterReducer(ConverterInteractor()),
-                currencyMapper)
+                ConverterReducer(),
+                ConverterInteractor(currencyRepo),
+                currencyMapper
+        )
     }
 
     private fun mockSchedulers() {

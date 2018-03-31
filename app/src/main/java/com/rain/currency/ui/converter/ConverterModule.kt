@@ -14,10 +14,10 @@ class ConverterModule {
 
     @Provides
     @ConverterScope
-    fun provideConverterViewModel(currencyRepo: CurrencyRepo,
-                                  reducer: ConverterReducer,
+    fun provideConverterViewModel(reducer: ConverterReducer,
+                                  interactor: ConverterInteractor,
                                   currencyMapper: CurrencyMapper): ConverterViewModel {
-        return ConverterViewModel(currencyRepo, reducer, currencyMapper)
+        return ConverterViewModel(reducer, interactor, currencyMapper)
     }
 
     @Provides
@@ -28,13 +28,13 @@ class ConverterModule {
 
     @Provides
     @ConverterScope
-    fun provideConverterReducer(interactor: ConverterInteractor): ConverterReducer {
-        return ConverterReducer(interactor)
+    fun provideConverterReducer(): ConverterReducer {
+        return ConverterReducer()
     }
 
     @Provides
     @ConverterScope
-    fun provideConverterInteractor(): ConverterInteractor {
-        return ConverterInteractor()
+    fun provideConverterInteractor(currencyRepo: CurrencyRepo): ConverterInteractor {
+        return ConverterInteractor(currencyRepo)
     }
 }

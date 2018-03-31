@@ -1,12 +1,56 @@
 package com.rain.currency.domain
 
+import com.rain.currency.data.model.Currency
+import com.rain.currency.data.model.Exchange
+import com.rain.currency.data.repo.CurrencyRepo
+import com.rain.currency.ui.converter.reducer.ConverterCommand
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.functions.BiFunction
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.text.NumberFormat
+import javax.inject.Inject
 
-class ConverterInteractor {
+class ConverterInteractor @Inject constructor(private val currencyRepo: CurrencyRepo) {
     private val numberFormatter = NumberFormat.getNumberInstance()
 
-    fun convertTarget(value: String, unit: String, data: ConverterData): ConverterData? {
+    fun fetchCurrency(): Observable<ConverterCommand> {
+        return Single.zip(currencyRepo.fetchExchange(), currencyRepo.fetchLastCurrency(),
+                BiFunction<Exchange, Currency, ConverterData> { exchange, currency ->
+                    ConverterData(exchange, currency)
+                })
+                .toObservable()
+                .map<ConverterCommand> { ConverterCommand.CurrencyContent(it) }
+                .startWith(ConverterCommand.CurrencyLoading())
+                .onErrorReturn { ConverterCommand.CurrencyError(it) }
+    }
+
+    fun convertTargetValue(value: String, data: ConverterData): Single<ConverterCommand> {
+        return Single.fromCallable {
+            convertTarget(value, data.currency.targetUnit, data)?.let {
+                return@fromCallable ConverterCommand.CurrencyResult(it)
+            }
+            return@fromCallable ConverterCommand.CurrencyResult(data)
+        }
+    }
+
+    fun convertTargetUnit(unit: String, data: ConverterData): Single<ConverterCommand> {
+        val single = Single.fromCallable {
+            val newCurrency = data.currency.copy(targetUnit = unit)
+            val newData = ConverterData(data.exchange, newCurrency)
+
+            convertBase(newCurrency.base, newCurrency.baseUnit, newData)?.let {
+                return@fromCallable it
+            }
+            return@fromCallable data
+        }
+        return single.observeOn(Schedulers.io())
+                .doOnSuccess({ currencyRepo.storeTargetUnit(it.currency.targetUnit) })
+                .map { ConverterCommand.CurrencyResult(it) }
+    }
+
+    private fun convertTarget(value: String, unit: String, data: ConverterData): ConverterData? {
         val currency = data.currency
         val exchange = data.exchange
 
@@ -26,7 +70,28 @@ class ConverterInteractor {
         return null
     }
 
-    fun convertBase(value: String, unit: String, data: ConverterData): ConverterData? {
+    fun convertBaseValue(value: String, data: ConverterData): Single<ConverterCommand> {
+        return Single.fromCallable {
+            convertBase(value, data.currency.baseUnit, data)?.let {
+                return@fromCallable ConverterCommand.CurrencyResult(it)
+            }
+            return@fromCallable ConverterCommand.CurrencyResult(data)
+        }
+    }
+
+    fun convertBaseUnit(unit: String, data: ConverterData): Single<ConverterCommand> {
+        val single = Single.fromCallable {
+            convertBase(data.currency.base, unit, data)?.let {
+                return@fromCallable it
+            }
+            return@fromCallable data
+        }
+        return single.observeOn(Schedulers.io())
+                .doOnSuccess({ currencyRepo.storeBaseUnit(it.currency.baseUnit) })
+                .map { ConverterCommand.CurrencyResult(it) }
+    }
+
+    private fun convertBase(value: String, unit: String, data: ConverterData): ConverterData? {
         val currency = data.currency
         val exchange = data.exchange
 
