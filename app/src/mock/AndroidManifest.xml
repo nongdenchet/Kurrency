@@ -6,5 +6,6 @@
 
     <application>
         <activity android:name=".ui.menu.MenuActivity" />
+        <activity android:name=".ui.converter.ConverterActivity" />
     </application>
 </manifest>

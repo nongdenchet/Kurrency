@@ -7,12 +7,11 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.view.inputmethod.InputMethodManager
 import com.google.gson.Gson
-import com.rain.currency.di.NetworkModule
 import com.rain.currency.ui.menu.MenuHandler
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = arrayOf(NetworkModule::class))
+@Module
 class AppModule {
 
     @Provides

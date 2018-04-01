@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.app.Service
 import com.crashlytics.android.Crashlytics
-import com.rain.currency.di.NetworkModule
 import com.rain.currency.di.application.AppComponent
 import com.rain.currency.di.application.DaggerAppComponent
 import dagger.android.AndroidInjector
@@ -40,7 +39,6 @@ open class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector 
     protected open fun initComponent() {
         component = DaggerAppComponent.builder()
                 .application(this)
-                .network(NetworkModule())
                 .build()
         component.inject(this)
     }
