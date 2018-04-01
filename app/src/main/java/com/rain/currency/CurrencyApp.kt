@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.app.Service
 import com.crashlytics.android.Crashlytics
+import com.rain.currency.di.NetworkModule
 import com.rain.currency.di.application.AppComponent
 import com.rain.currency.di.application.DaggerAppComponent
 import dagger.android.AndroidInjector
@@ -14,7 +15,7 @@ import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 import javax.inject.Inject
 
-class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
+open class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
     lateinit var component: AppComponent
 
     @Inject
@@ -36,9 +37,10 @@ class CurrencyApp : Application(), HasActivityInjector, HasServiceInjector {
         initComponent()
     }
 
-    private fun initComponent() {
+    protected open fun initComponent() {
         component = DaggerAppComponent.builder()
                 .application(this)
+                .network(NetworkModule())
                 .build()
         component.inject(this)
     }

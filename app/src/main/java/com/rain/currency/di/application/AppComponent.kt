@@ -3,6 +3,7 @@ package com.rain.currency.di.application
 import android.content.Context
 import com.rain.currency.CurrencyApp
 import com.rain.currency.di.BindingModule
+import com.rain.currency.di.NetworkModule
 import com.rain.currency.ui.picker.CurrencyPickerComponent
 import com.rain.currency.ui.picker.CurrencyPickerModule
 import dagger.BindsInstance
@@ -21,6 +22,9 @@ interface AppComponent {
     interface Builder {
         @BindsInstance
         fun application(context: Context): Builder
+
+        @BindsInstance
+        fun network(networkModule: NetworkModule): Builder
 
         fun build(): AppComponent
     }
