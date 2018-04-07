@@ -11,8 +11,6 @@ android {
         applicationId "com.rain.currency"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "com.rain.currency.EspressoRunner"
     }
@@ -29,6 +27,12 @@ android {
             shrinkResources true
             buildConfigField "String", "ACCESS_TOKEN", AccessToken
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationVariants.all { variant ->
+                variant.outputs.all { output ->
+                    outputFileName = "Kurrency-${variant.versionName}.apk"
+                }
+            }
         }
     }
 
@@ -41,6 +45,8 @@ android {
         }
         prod {
             dimension "default"
+            versionCode 1
+            versionName "1.0.0-beta"
         }
     }
 }
@@ -48,9 +54,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:27.1.0'
-    implementation 'com.android.support:support-v4:27.1.0'
-    implementation 'com.android.support:recyclerview-v7:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.jakewharton.timber:timber:4.7.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
