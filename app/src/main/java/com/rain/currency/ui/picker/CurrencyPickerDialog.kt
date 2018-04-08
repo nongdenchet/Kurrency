@@ -26,7 +26,6 @@ import javax.inject.Inject
 @SuppressLint("InflateParams")
 class CurrencyPickerDialog(private val context: Context) {
     private val result = PublishRelay.create<Pair<CurrencyType, CurrencyInfo>>()
-    private val DELAY_UNTIL_GAIN_FOCUS = 100L
     private val disposables = CompositeDisposable()
     private val handler = Handler()
     private lateinit var dialog: AlertDialog
@@ -59,7 +58,7 @@ class CurrencyPickerDialog(private val context: Context) {
 
         disposables.add(output.currencies
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ adapter.updateItems(it) }, Timber::e))
+                .subscribe({ adapter.submitList(it) }, Timber::e))
         disposables.add(output.result
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -104,6 +103,6 @@ class CurrencyPickerDialog(private val context: Context) {
         bindViewModel(currencyType)
         handler.postDelayed({
             inputMethodManager.showSoftInput(edtSearch, 0)
-        }, DELAY_UNTIL_GAIN_FOCUS)
+        }, 100L)
     }
 }
