@@ -1,4 +1,4 @@
 # Kurrency
 Currency converter on the fly
 
-![alt text](https://github.com/ntvinh11586/Kurrency/blob/develop/sample.gif " Kurrency")
+![alt text](https://github.com/nongdenchet/Kurrency/blob/develop/sample.gif " Kurrency")
