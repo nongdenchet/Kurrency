@@ -17,6 +17,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.WindowManager
 import android.widget.FrameLayout
 import com.rain.currency.utils.getOverlayType
+import com.rain.currency.utils.getScreenSize
 
 abstract class OverlayService : Service(), View.OnTouchListener {
     private val MAX_CLICK_DURATION = 100L
@@ -126,8 +127,9 @@ abstract class OverlayService : Service(), View.OnTouchListener {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            val screenSize = getScreenSize(windowManager)
             val params = window.layoutParams as WindowManager.LayoutParams
-            params.x = getX()
+            params.x = if (params.x > screenSize.heightPixels / 2) screenSize.widthPixels else 0
             params.y = getY()
             windowManager.updateViewLayout(window, params)
         }
