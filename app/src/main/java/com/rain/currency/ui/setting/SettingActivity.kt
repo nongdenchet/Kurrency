@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.rain.currency.support.AppManager
 import com.rain.currency.ui.converter.ConverterService
+import com.rain.currency.ui.intro.IntroActivity
 import com.rain.currency.utils.hasOverlayPermission
 import dagger.android.AndroidInjection
 import javax.inject.Inject
@@ -24,7 +25,10 @@ class SettingActivity : Activity() {
         super.onResume()
         if (hasOverlayPermission(this)) {
             startService(Intent(this, ConverterService::class.java))
+            startActivity(appManager.homeIntent())
+        } else {
+            finish()
+            startActivity(Intent(this, IntroActivity::class.java))
         }
-        startActivity(appManager.homeIntent())
     }
 }

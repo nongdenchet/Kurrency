@@ -5,6 +5,6 @@ import retrofit2.http.GET
 
 interface CurrencyApi {
 
-    @GET("live")
+    @GET("latest")
     fun getLiveCurrency(): Single<LiveCurrency>
 }

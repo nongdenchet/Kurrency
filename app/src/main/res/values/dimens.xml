@@ -17,4 +17,5 @@
     <dimen name="size_medium">18sp</dimen>
     <dimen name="button_padding">20dp</dimen>
     <dimen name="floating_margin">4dp</dimen>
+    <dimen name="min_menu_width">100dp</dimen>
 </resources>

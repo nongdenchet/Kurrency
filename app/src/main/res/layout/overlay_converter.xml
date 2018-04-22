@@ -45,6 +45,7 @@
                     android:id="@+id/tvBaseUnit"
                     style="@style/TitleText"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/space_medium"
                     android:layout_marginStart="@dimen/space_medium"
                     tools:text="SGD" />
 
@@ -52,6 +53,7 @@
                     android:id="@+id/edtBase"
                     style="@style/Text.EditText.Decimal"
                     android:layout_height="wrap_content"
+                    android:textCursorDrawable="@null"
                     tools:ignore="LabelFor" />
 
                 <TextView
@@ -89,13 +91,16 @@
                     android:id="@+id/tvTargetUnit"
                     style="@style/TitleText"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/space_medium"
                     android:layout_marginStart="@dimen/space_medium"
+                    android:textIsSelectable="true"
                     tools:text="VND" />
 
                 <EditText
                     android:id="@+id/edtTarget"
                     style="@style/Text.EditText.Decimal"
                     android:layout_height="wrap_content"
+                    android:textCursorDrawable="@null"
                     tools:ignore="LabelFor" />
 
                 <TextView

@@ -41,6 +41,11 @@
         <item name="android:inputType">numberDecimal</item>
     </style>
 
+    <style name="PopupMenu">
+        <item name="android:windowEnterAnimation">@anim/popup_show</item>
+        <item name="android:windowExitAnimation">@anim/popup_hide</item>
+    </style>
+
     <style name="Text.EditText.Decimal">
         <item name="android:digits">0123456789.,</item>
     </style>

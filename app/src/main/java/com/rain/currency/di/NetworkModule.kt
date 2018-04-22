@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 @Module
-class NetworkModule {
+open class NetworkModule {
 
     @Provides
     @ApplicationScope
@@ -65,7 +65,7 @@ class NetworkModule {
     private fun cacheInterceptor(networkManager: NetworkManager): Interceptor {
         return Interceptor {
             val originalResponse = it.proceed(it.request())
-            val maxAge = 60 * 60 * 24
+            val maxAge = 60 * 30
 
             return@Interceptor if (networkManager.isNetworkAvailable()) {
                 originalResponse.newBuilder()
@@ -92,7 +92,7 @@ class NetworkModule {
 
     @Provides
     @ApplicationScope
-    fun provideCurrencyRepo(retrofit: Retrofit): CurrencyApi {
+    open fun provideCurrencyApi(retrofit: Retrofit): CurrencyApi {
         return retrofit.create(CurrencyApi::class.java)
     }
 }

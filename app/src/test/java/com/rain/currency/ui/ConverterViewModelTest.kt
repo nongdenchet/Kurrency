@@ -7,6 +7,7 @@ import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.repo.CurrencyRepo
+import com.rain.currency.domain.ConverterInteractor
 import com.rain.currency.support.CurrencyMapper
 import com.rain.currency.ui.converter.ConverterViewModel
 import com.rain.currency.ui.converter.reducer.ConverterReducer
@@ -28,23 +29,36 @@ class ConverterViewModelTest {
     private lateinit var converterViewModel: ConverterViewModel
     private val retryClicks = PublishRelay.create<Any>()
     private val moneyClicks = PublishRelay.create<Any>()
+    private val backClicks = PublishRelay.create<Any>()
     private val baseChange = PublishRelay.create<String>()
     private val targetChange = PublishRelay.create<String>()
     private val baseUnitChange = PublishRelay.create<String>()
     private val targetUnitChange = PublishRelay.create<String>()
 
     @Mock
-    lateinit var currencyRepo: CurrencyRepo
+    private lateinit var currencyRepo: CurrencyRepo
     @Mock
-    lateinit var currencyMapper: CurrencyMapper
+    private lateinit var currencyMapper: CurrencyMapper
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
+        mockSchedulers()
+        mockData()
+        converterViewModel = ConverterViewModel(
+                ConverterReducer(),
+                ConverterInteractor(currencyRepo),
+                currencyMapper
+        )
+    }
+
+    private fun mockSchedulers() {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
+    }
 
+    private fun mockData() {
         val currencies = ArrayMap<String, Double>()
         currencies["USD"] = 1.0
         currencies["VND"] = 1.0 / 20000
@@ -56,17 +70,36 @@ class ConverterViewModelTest {
                 Single.just(Exchange("USD", Date(System.currentTimeMillis()), currencies)))
         `when`(currencyMapper.toInfo(ArgumentMatchers.anyString()))
                 .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
-
-        converterViewModel = ConverterViewModel(
-                currencyRepo,
-                ConverterReducer(),
-                currencyMapper
-        )
     }
 
     private fun bind(): ConverterViewModel.Output {
         return converterViewModel.bind(ConverterViewModel.Input(retryClicks, moneyClicks,
-                baseChange, targetChange, baseUnitChange, targetUnitChange))
+                baseChange, targetChange, baseUnitChange, targetUnitChange, backClicks))
+    }
+
+    @Test
+    fun shouldExpands() {
+        val output = bind()
+        val observer = output.expand.test()
+        moneyClicks.accept(1)
+        observer.assertValues(false, true)
+    }
+
+    @Test
+    fun shouldCollapses() {
+        val output = bind()
+        val observer = output.expand.test()
+        moneyClicks.accept(1)
+        backClicks.accept(1)
+        observer.assertValues(false, true, false)
+    }
+
+    @Test
+    fun shouldDoNothing() {
+        val output = bind()
+        val observer = output.expand.test()
+        backClicks.accept(1)
+        observer.assertValues(false)
     }
 
     @Test
@@ -75,6 +108,26 @@ class ConverterViewModelTest {
         val observer = output.loadingVisibility.test()
         moneyClicks.accept(1)
         observer.assertValues(View.GONE, View.VISIBLE, View.GONE)
+    }
+
+    @Test
+    fun shouldRecoverAfterFailed() {
+        `when`(currencyRepo.fetchLastCurrency()).thenReturn(Single.error(RuntimeException()))
+        val output = bind()
+        moneyClicks.accept(1)
+        mockData()
+        retryClicks.accept(1)
+        baseChange.accept("1")
+        output.targetResult.test().assertValue("20000")
+    }
+
+    @Test
+    fun shouldRetry() {
+        val output = bind()
+        val observer = output.loadingVisibility.test()
+        moneyClicks.accept(1)
+        retryClicks.accept(1)
+        observer.assertValues(View.GONE, View.VISIBLE, View.GONE, View.VISIBLE, View.GONE)
     }
 
     @Test

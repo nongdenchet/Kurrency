@@ -34,10 +34,8 @@
 
         <activity
             android:name=".ui.setting.SettingActivity"
-            android:excludeFromRecents="true"
-            android:noHistory="true"
-            android:theme="@style/Transparent"
-            android:screenOrientation="portrait" />
+            android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|touchscreen|smallestScreenSize|uiMode"
+            android:theme="@style/Transparent" />
 
         <activity
             android:name=".ui.intro.IntroActivity"
@@ -50,5 +48,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="2418f69af29498e6be0ec1633e58d5586cd2753c" />
     </application>
 </manifest>

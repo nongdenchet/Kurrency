@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    android:id="@+id/tvMenu"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:minWidth="@dimen/min_menu_width"
+    android:padding="@dimen/space_small"
+    android:textColor="@color/black"
+    android:textSize="@dimen/size_normal"
+    tools:text="Paste" />

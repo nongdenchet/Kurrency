@@ -2,31 +2,27 @@ package com.rain.currency.ui.converter
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.PixelFormat
 import android.os.Handler
-import android.support.v4.content.ContextCompat
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
+import com.jakewharton.rxrelay2.PublishRelay
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.OverlayService
-import com.rain.currency.ui.picker.CurrencyPicker
+import com.rain.currency.ui.menu.MenuHandler
+import com.rain.currency.ui.picker.CurrencyPickerDialog
 import com.rain.currency.ui.picker.CurrencyType
 import com.rain.currency.utils.getClicks
-import com.rain.currency.utils.getOverlayType
 import com.rain.currency.utils.getScreenSize
 import com.rain.currency.utils.getStreamText
 import com.rain.currency.utils.loadIcon
@@ -41,10 +37,13 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ConverterService : OverlayService() {
+    private val backClicks = PublishRelay.create<Any>()
     private val disposables = CompositeDisposable()
     private var hidingDisposable: Disposable? = null
     private val handler = Handler()
-    private lateinit var removeBar: FrameLayout
+
+    private lateinit var background: Background
+    private lateinit var removeBar: RemoveBar
 
     @BindView(R.id.pbLoading)
     lateinit var pbLoading: ProgressBar
@@ -76,44 +75,34 @@ class ConverterService : OverlayService() {
     @Inject
     lateinit var viewModel: ConverterViewModel
     @Inject
-    lateinit var currencyPicker: CurrencyPicker
+    lateinit var currencyPicker: CurrencyPickerDialog
     @Inject
     lateinit var inputMethodManager: InputMethodManager
-
-    private fun removeBarLayoutParams(): WindowManager.LayoutParams {
-        val params = WindowManager.LayoutParams()
-        params.format = PixelFormat.RGBA_8888
-        params.type = getOverlayType()
-        params.gravity = Gravity.TOP or Gravity.START
-        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        params.width = removeBar.layoutParams.width
-        params.height = removeBar.layoutParams.height
-        params.y = removeBarY()
-        return params
-    }
+    @Inject
+    lateinit var menuHandler: MenuHandler
 
     private fun screenSize() = getScreenSize(windowManager)
-
-    private val removeBarHeight: Int by lazy {
-        resources.getDimensionPixelSize(R.dimen.remove_bar_height)
-    }
 
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
         ButterKnife.bind(this, window)
-        setUpView()
+        setUpMoneyButton()
+        setUpEditText()
         bindViewModel()
     }
 
-    private fun setUpView() {
-        setUpMoneyButton()
-        setUpRemoveBar()
-        setUpEditText()
+    override fun initialize() {
+        background = Background(this)
+        background.setOnClickListener { backClicks.accept(1) }
+        background.attach()
+        removeBar = RemoveBar(this)
     }
 
     private fun setUpEditText() {
         currencyPicker.onDismiss = this::onPickerDismiss
+        menuHandler.attach(edtBase)
+        menuHandler.attach(edtTarget)
     }
 
     private fun onPickerDismiss() {
@@ -124,34 +113,24 @@ class ConverterService : OverlayService() {
         }
     }
 
-    @SuppressLint("InflateParams")
-    private fun setUpRemoveBar() {
-        removeBar = LayoutInflater.from(this).inflate(R.layout.remove_bar, null) as FrameLayout
-        removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, removeBarHeight)
-    }
-
-    private fun removeBarY() = screenSize().heightPixels - removeBarHeight
-
     override fun onDragStarted(x: Float, y: Float) {
-        windowManager.addView(removeBar, removeBarLayoutParams())
+        removeBar.attach()
         focusMoneyButton()
     }
 
     override fun onDragEnded(x: Float, y: Float) {
-        windowManager.removeView(removeBar)
+        removeBar.detach()
         blurMoneyButton()
     }
 
     override fun onDragMoved(x: Float, y: Float) {
-        removeBar.setBackgroundColor(ContextCompat.getColor(this,
-                if (y > removeBarY() - removeBarHeight) R.color.red
-                else R.color.light_red))
+        removeBar.update(x, y)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setUpMoneyButton() {
         btnMoney.setOnTouchListener { view, event ->
-            if (event.rawY > removeBarY() - removeBarHeight && event.action == ACTION_UP) {
+            if (event.rawY > removeBar.getY() - removeBar.height && event.action == ACTION_UP) {
                 stopService(Intent(this, ConverterService::class.java))
                 return@setOnTouchListener true
             }
@@ -166,7 +145,8 @@ class ConverterService : OverlayService() {
                 getStreamText(edtBase),
                 getStreamText(edtTarget),
                 currencyPicker.getUnit(CurrencyType.BASE),
-                currencyPicker.getUnit(CurrencyType.TARGET)
+                currencyPicker.getUnit(CurrencyType.TARGET),
+                backClicks.hide()
         )
         val output = viewModel.bind(input)
         disposables.addAll(
@@ -217,9 +197,11 @@ class ConverterService : OverlayService() {
         if (expand) {
             showContent()
             focusMoneyButton()
+            background.activateBackground()
         } else {
             hideContent()
             blurMoneyButton()
+            background.deactivateBackground()
         }
     }
 
@@ -236,12 +218,15 @@ class ConverterService : OverlayService() {
                 .subscribe({ btnMoney.alpha = 0.25f }, Timber::e)
     }
 
-    override fun onBackPressed() = viewModel.onBackPressed()
+    override fun onBackPressed(): Boolean {
+        backClicks.accept(1)
+        return true
+    }
 
     override fun onDestroy() {
-        if (removeBar.isAttachedToWindow) {
-            windowManager.removeView(removeBar)
-        }
+        removeBar.detach()
+        background.detach()
+        menuHandler.dismiss()
         currencyPicker.onDismiss = null
         viewModel.unbind()
         disposables.dispose()
@@ -265,6 +250,7 @@ class ConverterService : OverlayService() {
         inputMethodManager.hideSoftInputFromWindow(edtBase.windowToken, 0)
         inputMethodManager.hideSoftInputFromWindow(edtTarget.windowToken, 0)
         unFocusWindow()
+        menuHandler.dismiss()
     }
 
     @OnClick(R.id.ivBaseIcon, R.id.tvBaseUnit)
@@ -276,4 +262,8 @@ class ConverterService : OverlayService() {
     fun onTargetClick() {
         currencyPicker.show(CurrencyType.TARGET)
     }
+
+    override fun getX() = screenSize().widthPixels
+
+    override fun getY()= screenSize().heightPixels / 2 - resources.getDimensionPixelSize(R.dimen.button_money_size) / 2
 }
