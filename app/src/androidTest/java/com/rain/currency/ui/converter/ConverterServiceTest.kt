@@ -14,13 +14,11 @@ import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.test.uiautomator.UiDevice
-import android.support.test.uiautomator.UiSelector
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.rain.currency.EspressoApp
 import com.rain.currency.R
-import com.rain.currency.utils.hasOverlayPermission
-import com.rain.currency.utils.toOverlayPermission
+import com.rain.currency.ui.ensureOverlayPermission
 import org.hamcrest.CoreMatchers.*
 import org.junit.After
 import org.junit.Before
@@ -49,11 +47,7 @@ class ConverterServiceTest {
                 .apply()
 
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        if (!hasOverlayPermission(activityTestRule.activity)) {
-            toOverlayPermission(activityTestRule.activity)
-            device.findObject(UiSelector().resourceId("android:id/switch_widget")).click()
-            device.pressBack()
-        }
+        ensureOverlayPermission(activityTestRule.activity)
         decorView = activityTestRule.activity.window.decorView
         activityTestRule.activity.startService(intent())
     }
