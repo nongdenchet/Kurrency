@@ -1,6 +1,5 @@
 package com.rain.currency.ui.menu
 
-import android.support.test.InstrumentationRegistry.getInstrumentation
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.*
 import android.support.test.espresso.assertion.ViewAssertions.matches
@@ -9,11 +8,8 @@ import android.support.test.espresso.matcher.ViewMatchers.*
 import android.support.test.filters.LargeTest
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import android.support.test.uiautomator.UiDevice
-import android.support.test.uiautomator.UiSelector
 import com.rain.currency.R
-import com.rain.currency.utils.hasOverlayPermission
-import com.rain.currency.utils.toOverlayPermission
+import com.rain.currency.ui.ensureOverlayPermission
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.allOf
@@ -32,12 +28,7 @@ class MenuHandlerTest {
 
     @Before
     fun setUp() {
-        if (!hasOverlayPermission(activityTestRule.activity)) {
-            toOverlayPermission(activityTestRule.activity)
-            val device = UiDevice.getInstance(getInstrumentation())
-            device.findObject(UiSelector().resourceId("android:id/switch_widget")).click()
-            device.pressBack()
-        }
+        ensureOverlayPermission(activityTestRule.activity)
     }
 
     @Test
