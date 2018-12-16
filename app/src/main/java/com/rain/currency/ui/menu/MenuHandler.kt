@@ -111,7 +111,7 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
         }
 
         val primaryClip = clipboardManager.primaryClip
-
-        return primaryClip.itemCount > 0 && !primaryClip.getItemAt(0).text.isNullOrBlank()
+        return primaryClip != null && primaryClip.itemCount > 0
+                && !primaryClip.getItemAt(0).text.isNullOrBlank()
     }
 }

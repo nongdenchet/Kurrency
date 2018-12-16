@@ -1,6 +1,6 @@
 package com.rain.currency.utils
 
 object Constant {
-    val ACCESS_TOKEN = "access_key"
-    val BASE_URL = "https://kurrency.herokuapp.com/api/"
+    const val ACCESS_TOKEN = "access_key"
+    const val BASE_URL = "https://kurrency.herokuapp.com/api/"
 }
