@@ -18,6 +18,10 @@ android {
         testInstrumentationRunner "com.rain.currency.EspressoRunner"
     }
 
+    testOptions {
+        animationsDisabled = true
+    }
+
     buildTypes {
         debug {
             testCoverageEnabled true

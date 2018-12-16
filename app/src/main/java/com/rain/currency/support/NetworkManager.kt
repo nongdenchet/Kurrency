@@ -11,6 +11,6 @@ class NetworkManager @Inject constructor(context: Context) {
 
     fun isNetworkAvailable(): Boolean {
         val netInfo = connectivityManager.activeNetworkInfo
-        return netInfo != null && netInfo.isConnectedOrConnecting
+        return netInfo != null && netInfo.isConnected
     }
 }

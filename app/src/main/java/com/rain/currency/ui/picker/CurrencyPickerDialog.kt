@@ -80,7 +80,9 @@ class CurrencyPickerDialog(private val context: Context) {
         dialog = AlertDialog.Builder(context)
                 .setView(view)
                 .create()
-        dialog.window.setType(getOverlayType())
+        dialog.window?.run {
+            setType(getOverlayType())
+        }
         dialog.setOnDismissListener {
             onDismiss?.invoke()
             disposables.clear()

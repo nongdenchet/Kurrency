@@ -22,12 +22,16 @@ import com.rain.currency.ui.ensureOverlayPermission
 import org.hamcrest.CoreMatchers.*
 import org.junit.After
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
+
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ConverterServiceTest {
     private lateinit var device: UiDevice
     private lateinit var decorView: View
@@ -82,7 +86,9 @@ class ConverterServiceTest {
         onView(allOf(withId(R.id.btnMoney), isDisplayed()))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .perform(click())
-        device.pressBack()
+        onView(allOf(withId(R.id.edtBase)))
+                .inRoot(withDecorView(not(`is`(decorView))))
+                .perform(replaceText("20"), closeSoftKeyboard())
         device.pressBack()
 
         onView(withId(R.id.content))

@@ -124,7 +124,7 @@ class ConverterService : OverlayService() {
     }
 
     override fun onDragMoved(x: Float, y: Float) {
-        removeBar.update(x, y)
+        removeBar.update(y)
     }
 
     @SuppressLint("ClickableViewAccessibility")

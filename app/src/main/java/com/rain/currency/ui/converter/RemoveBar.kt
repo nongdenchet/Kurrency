@@ -25,7 +25,7 @@ class RemoveBar(private val context: Context) {
         removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height)
     }
 
-    fun update(x: Float, y: Float) {
+    fun update(y: Float) {
         removeBar.setBackgroundColor(ContextCompat.getColor(context,
                 if (y > getY() - height) R.color.red
                 else R.color.light_red))
