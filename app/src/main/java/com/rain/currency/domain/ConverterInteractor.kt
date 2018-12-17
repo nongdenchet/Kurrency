@@ -46,7 +46,7 @@ class ConverterInteractor @Inject constructor(private val currencyRepo: Currency
             return@fromCallable data
         }
         return single.observeOn(Schedulers.io())
-                .doOnSuccess({ currencyRepo.storeTargetUnit(it.currency.targetUnit) })
+                .doOnSuccess { currencyRepo.storeTargetUnit(it.currency.targetUnit) }
                 .map { ConverterCommand.CurrencyResult(it) }
     }
 
@@ -87,7 +87,7 @@ class ConverterInteractor @Inject constructor(private val currencyRepo: Currency
             return@fromCallable data
         }
         return single.observeOn(Schedulers.io())
-                .doOnSuccess({ currencyRepo.storeBaseUnit(it.currency.baseUnit) })
+                .doOnSuccess { currencyRepo.storeBaseUnit(it.currency.baseUnit) }
                 .map { ConverterCommand.CurrencyResult(it) }
     }
 

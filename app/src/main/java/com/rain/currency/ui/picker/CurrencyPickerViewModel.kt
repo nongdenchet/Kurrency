@@ -60,7 +60,9 @@ class CurrencyPickerViewModel(private val currencyRepo: CurrencyRepo,
     }
 
     private fun combine(keyword: String, currencies: List<String>): List<CurrencyInfo> {
-        return currencies.filter { it.contains(keyword) }
+        return currencies.asSequence()
+                .filter { it.contains(keyword) }
                 .map { currencyMapper.toInfo(it) }
+                .toList()
     }
 }

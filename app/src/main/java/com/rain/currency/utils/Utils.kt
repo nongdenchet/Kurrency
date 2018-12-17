@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.rain.currency.utils
 
 import android.content.Context
