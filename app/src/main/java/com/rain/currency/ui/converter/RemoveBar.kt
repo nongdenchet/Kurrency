@@ -19,7 +19,7 @@ class RemoveBar(private val context: Context) {
     private val resources = context.resources
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val removeBar: FrameLayout = LayoutInflater.from(context).inflate(R.layout.remove_bar, null) as FrameLayout
-    val height = resources.getDimensionPixelSize(R.dimen.remove_bar_height)
+    private val height = resources.getDimensionPixelSize(R.dimen.remove_bar_height)
 
     init {
         removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height)
@@ -27,8 +27,9 @@ class RemoveBar(private val context: Context) {
 
     fun update(y: Float) {
         removeBar.setBackgroundColor(ContextCompat.getColor(context,
-                if (y > getY() - height) R.color.red
-                else R.color.light_red))
+                if (y > getY()) R.color.red
+                else R.color.light_red)
+        )
     }
 
     private fun layoutParams(): WindowManager.LayoutParams {

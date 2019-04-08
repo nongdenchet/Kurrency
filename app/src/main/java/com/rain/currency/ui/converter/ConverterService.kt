@@ -1,7 +1,7 @@
 package com.rain.currency.ui.converter
 
 import android.annotation.SuppressLint
-import android.content.Intent
+import android.graphics.Point
 import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MotionEvent.ACTION_UP
@@ -81,8 +81,6 @@ class ConverterService : OverlayService() {
     @Inject
     lateinit var menuHandler: MenuHandler
 
-    private fun screenSize() = getScreenSize(windowManager)
-
     override fun onCreate() {
         AndroidInjection.inject(this)
         super.onCreate()
@@ -92,7 +90,7 @@ class ConverterService : OverlayService() {
         bindViewModel()
     }
 
-    override fun initialize() {
+    override fun onWindowCreated() {
         background = Background(this)
         background.setOnClickListener { backClicks.accept(1) }
         background.attach()
@@ -130,8 +128,9 @@ class ConverterService : OverlayService() {
     @SuppressLint("ClickableViewAccessibility")
     private fun setUpMoneyButton() {
         btnMoney.setOnTouchListener { view, event ->
-            if (event.rawY > removeBar.getY() - removeBar.height && event.action == ACTION_UP) {
-                stopService(Intent(this, ConverterService::class.java))
+            val isInRemoveBar = event.rawY > removeBar.getY()
+            if (event.action == ACTION_UP && isInRemoveBar) {
+                stopSelf()
                 return@setOnTouchListener true
             }
             return@setOnTouchListener onTouch(view, event)
@@ -234,8 +233,9 @@ class ConverterService : OverlayService() {
         super.onDestroy()
     }
 
-    override fun container(window: ViewGroup): View {
-        return LayoutInflater.from(this).inflate(R.layout.overlay_converter, window, false)
+    override fun onCreateView(window: ViewGroup): View {
+        return LayoutInflater.from(this)
+                .inflate(R.layout.overlay_converter, window, false)
     }
 
     private fun showContent() {
@@ -263,7 +263,9 @@ class ConverterService : OverlayService() {
         currencyPicker.show(CurrencyType.TARGET)
     }
 
-    override fun getX() = screenSize().widthPixels
-
-    override fun getY()= screenSize().heightPixels / 2 - resources.getDimensionPixelSize(R.dimen.button_money_size) / 2
+    override fun getInitPosition(): Point {
+        val screenSize = getScreenSize(windowManager)
+        return Point(screenSize.widthPixels, screenSize.heightPixels / 4 - resources
+                .getDimensionPixelSize(R.dimen.button_money_size) / 2)
+    }
 }

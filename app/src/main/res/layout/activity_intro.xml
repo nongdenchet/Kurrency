@@ -12,7 +12,7 @@
         android:layout_width="156dp"
         android:layout_height="156dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/space_xlarge"
+        android:layout_marginTop="@dimen/space_large"
         android:src="@drawable/ic_money"
         tools:ignore="ContentDescription" />
 
@@ -49,5 +49,6 @@
         android:padding="@dimen/button_padding"
         android:text="@string/grand_permission"
         android:textColor="@color/colorPrimary"
-        android:textSize="@dimen/size_normal" />
+        android:textSize="@dimen/size_normal"
+        tools:targetApi="lollipop" />
 </RelativeLayout>
