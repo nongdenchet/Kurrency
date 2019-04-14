@@ -1,6 +1,6 @@
 package com.rain.currency.ui
 
-import android.support.v4.util.ArrayMap
+import androidx.collection.ArrayMap
 import android.view.View
 import com.jakewharton.rxrelay2.PublishRelay
 import com.rain.currency.data.model.Currency
@@ -59,7 +59,7 @@ class ConverterViewModelTest {
     }
 
     private fun mockData() {
-        val currencies = ArrayMap<String, Double>()
+        val currencies = androidx.collection.ArrayMap<String, Double>()
         currencies["USD"] = 1.0
         currencies["VND"] = 1.0 / 20000
         currencies["SGD"] = 1.0 / 2

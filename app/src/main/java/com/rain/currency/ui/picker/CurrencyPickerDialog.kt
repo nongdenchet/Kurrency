@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -39,7 +39,7 @@ class CurrencyPickerDialog(private val context: Context) {
     lateinit var inputMethodManager: InputMethodManager
 
     @BindView(R.id.rvCurrencies)
-    lateinit var rvCurrencies: RecyclerView
+    lateinit var rvCurrencies: androidx.recyclerview.widget.RecyclerView
     @BindView(R.id.edtSearch)
     lateinit var edtSearch: EditText
 
@@ -90,7 +90,7 @@ class CurrencyPickerDialog(private val context: Context) {
             edtSearch.setText("")
         }
         rvCurrencies.adapter = adapter
-        rvCurrencies.layoutManager = LinearLayoutManager(context)
+        rvCurrencies.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
     }
 
     fun getUnit(currencyType: CurrencyType): Observable<String> {

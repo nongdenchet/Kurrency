@@ -1,7 +1,7 @@
 package com.rain.currency.support
 
 import android.content.Context
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rain.currency.R
