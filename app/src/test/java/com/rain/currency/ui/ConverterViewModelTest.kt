@@ -58,10 +58,11 @@ class ConverterViewModelTest {
     }
 
     private fun mockData() {
-        val currencies = ArrayMap<String, Double>()
-        currencies["USD"] = 1.0
-        currencies["VND"] = 1.0 / 20000
-        currencies["SGD"] = 1.0 / 2
+        val currencies = ArrayMap<String, Double>().apply {
+            this["USD"] = 1.0
+            this["VND"] = 1.0 / 20000
+            this["SGD"] = 1.0 / 2
+        }
 
         `when`(currencyRepo.fetchLastCurrency()).thenReturn(
                 Single.just(Pair("USD", "VND")).map { Currency(baseUnit = it.first, targetUnit = it.second) })

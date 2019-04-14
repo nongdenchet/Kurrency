@@ -12,7 +12,7 @@ import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 import javax.inject.Inject
 
-open class CurrencyApp : Application(), HasServiceInjector {
+class CurrencyApp : Application(), HasServiceInjector {
     lateinit var component: AppComponent
 
     @Inject
@@ -28,7 +28,7 @@ open class CurrencyApp : Application(), HasServiceInjector {
         initComponent()
     }
 
-    protected open fun initComponent() {
+    private fun initComponent() {
         component = DaggerAppComponent.builder()
                 .application(this)
                 .build()
