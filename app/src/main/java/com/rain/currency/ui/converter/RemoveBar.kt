@@ -3,8 +3,8 @@ package com.rain.currency.ui.converter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup

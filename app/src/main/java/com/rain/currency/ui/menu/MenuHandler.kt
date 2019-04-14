@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.PopupWindowCompat
+import androidx.core.content.ContextCompat
+import androidx.core.widget.PopupWindowCompat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View

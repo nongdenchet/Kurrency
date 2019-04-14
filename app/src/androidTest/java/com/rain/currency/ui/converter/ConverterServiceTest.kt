@@ -2,19 +2,19 @@ package com.rain.currency.ui.converter
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions.*
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import android.support.test.espresso.matcher.RootMatchers.withDecorView
-import android.support.test.espresso.matcher.ViewMatchers
-import android.support.test.espresso.matcher.ViewMatchers.*
-import android.support.test.filters.LargeTest
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
-import android.support.test.uiautomator.UiDevice
-import android.support.v7.widget.RecyclerView
+import androidx.test.InstrumentationRegistry
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.matcher.RootMatchers.withDecorView
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.filters.LargeTest
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
+import androidx.test.uiautomator.UiDevice
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import com.rain.currency.EspressoApp
 import com.rain.currency.R
@@ -112,7 +112,7 @@ class ConverterServiceTest {
                 .perform(replaceText("sgd"), closeSoftKeyboard())
         onView(allOf(withId(R.id.rvCurrencies)))
                 .inRoot(withDecorView(not(`is`(decorView))))
-                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+                .perform(actionOnItemAtPosition<androidx.recyclerview.widget.RecyclerView.ViewHolder>(0, click()))
         onView(allOf(withId(R.id.edtBase)))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .perform(replaceText("20"))

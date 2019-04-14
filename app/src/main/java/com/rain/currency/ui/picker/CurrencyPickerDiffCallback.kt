@@ -1,6 +1,6 @@
 package com.rain.currency.ui.picker
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import com.rain.currency.data.model.CurrencyInfo
 
 class CurrencyPickerDiffCallback : DiffUtil.ItemCallback<CurrencyInfo>() {

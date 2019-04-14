@@ -1,6 +1,6 @@
 package com.rain.currency.data.repo
 
-import android.support.v4.util.ArrayMap
+import androidx.collection.ArrayMap
 import com.rain.currency.data.local.CurrencyStore
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange
@@ -55,7 +55,7 @@ class CurrencyRepo @Inject constructor(
     fun storeTargetUnit(value: String) = currencyStore.storeTargetUnit(value)
 
     private fun toExchange(liveCurrency: LiveCurrency): Exchange {
-        val currencies = ArrayMap<String, Double>(liveCurrency.quotes.size)
+        val currencies = androidx.collection.ArrayMap<String, Double>(liveCurrency.quotes.size)
         currencies[liveCurrency.source] = 1.0
         for (currency in liveCurrency.quotes) {
             currencies[currency.key.substring(3)] = 1.0 / currency.value

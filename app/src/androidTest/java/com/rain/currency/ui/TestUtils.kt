@@ -2,9 +2,9 @@ package com.rain.currency.ui
 
 import android.app.Activity
 import android.os.Build
-import android.support.test.InstrumentationRegistry
-import android.support.test.uiautomator.UiDevice
-import android.support.test.uiautomator.UiSelector
+import androidx.test.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiSelector
 import com.rain.currency.utils.hasOverlayPermission
 import com.rain.currency.utils.toOverlayPermission
 

@@ -1,5 +1,5 @@
 <manifest xmlns:tools="http://schemas.android.com/tools"
-    package="com.grab.pax.hitch">
+    package="com.rain.currency">
 
-    <uses-sdk tools:overrideLibrary="android.support.test.uiautomator.v18, com.grab.hydra" />
+    <uses-sdk tools:overrideLibrary="android_libs.ub_uiautomator" />
 </manifest>

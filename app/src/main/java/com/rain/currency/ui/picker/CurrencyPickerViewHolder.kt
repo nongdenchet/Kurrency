@@ -1,6 +1,6 @@
 package com.rain.currency.ui.picker
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 
-class CurrencyPickerViewHolder(itemView: View, onClick: (Int) -> Unit) : RecyclerView.ViewHolder(itemView) {
+class CurrencyPickerViewHolder(itemView: View, onClick: (Int) -> Unit) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
     @BindView(R.id.tvUnit)
     lateinit var tvUnit: TextView
     @BindView(R.id.tvSymbol)
