@@ -8,6 +8,7 @@ apply from: '../jacoco.gradle'
 android {
     compileSdkVersion 28
     testBuildType "mock"
+
     defaultConfig {
         applicationId "com.rain.currency"
         minSdkVersion 16
@@ -15,7 +16,9 @@ android {
         versionCode 5
         versionName "1.0.4"
 
-        testInstrumentationRunner "com.rain.currency.EspressoRunner"
+        buildConfigField "String", "BASE_URL", '"https://kurrency.herokuapp.com/api/"'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -35,6 +38,7 @@ android {
 
         mock {
             initWith(debug)
+            buildConfigField "String", "BASE_URL", '"http://localhost:8000/"'
         }
 
         release {
@@ -59,6 +63,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
+    // Support
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
@@ -92,7 +98,7 @@ dependencies {
     // Networking
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     //noinspection GradleDependency
-    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.2'
@@ -100,6 +106,9 @@ dependencies {
     // Testing
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.22.0'
+
+    // Android test
+    androidTestImplementation 'com.squareup.okhttp3:mockwebserver:3.12.2'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'

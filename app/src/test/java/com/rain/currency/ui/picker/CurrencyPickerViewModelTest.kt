@@ -29,10 +29,12 @@ class CurrencyPickerViewModelTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
 
-        val currencies = ArrayMap<String, Double>()
-        currencies["USD"] = 1.0
-        currencies["VND"] = 1.0 / 20000
-        currencies["SGD"] = 1.0 / 2
+        val currencies = ArrayMap<String, Double>().apply {
+            this["USD"] = 1.0
+            this["VND"] = 1.0 / 20000
+            this["SGD"] = 1.0 / 2
+        }
+
         `when`(currencyRepo.fetchExchange(ArgumentMatchers.anyBoolean())).thenReturn(
                 Single.just(Exchange(currencies)))
         `when`(currencyMapper.toInfo(ArgumentMatchers.anyString()))

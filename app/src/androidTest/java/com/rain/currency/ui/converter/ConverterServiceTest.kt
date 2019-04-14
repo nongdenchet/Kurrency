@@ -23,6 +23,12 @@ import androidx.test.uiautomator.UiDevice
 import com.rain.currency.R
 import com.rain.currency.ui.cleanSharePrefs
 import com.rain.currency.ui.ensureOverlayPermission
+import com.rain.currency.ui.getMockServerPort
+import com.rain.currency.ui.mockLiveCurrency
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
@@ -38,6 +44,8 @@ import org.junit.runners.MethodSorters
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ConverterServiceTest {
+    private val webServer = MockWebServer()
+
     private lateinit var device: UiDevice
     private lateinit var decorView: View
 
@@ -47,12 +55,30 @@ class ConverterServiceTest {
 
     @Before
     fun setUp() {
+        initMockWebServer()
         cleanSharePrefs()
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         activityTestRule.activity.run {
             ensureOverlayPermission(this)
             decorView = window.decorView
             startService(intent())
+        }
+    }
+
+    private fun initMockWebServer() {
+        webServer.run {
+            setDispatcher(object : Dispatcher() {
+                override fun dispatch(request: RecordedRequest): MockResponse {
+                    if (request.path.contains("/latest")) {
+                        return MockResponse().apply {
+                            setBody(mockLiveCurrency())
+                        }
+                    }
+
+                    return MockResponse()
+                }
+            })
+            start(getMockServerPort())
         }
     }
 
@@ -136,5 +162,6 @@ class ConverterServiceTest {
     fun tearDown() {
         activityTestRule.activity.stopService(intent())
         cleanSharePrefs()
+        webServer.shutdown()
     }
 }

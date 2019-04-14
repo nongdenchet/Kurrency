@@ -1,7 +1,11 @@
 package com.rain.currency.ui.converter.reducer
 
 import com.rain.currency.domain.ConverterData
-import com.rain.currency.ui.converter.reducer.ConverterCommand.*
+import com.rain.currency.ui.converter.reducer.ConverterCommand.ChangeExpand
+import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyContent
+import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyError
+import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyLoading
+import com.rain.currency.ui.converter.reducer.ConverterCommand.CurrencyResult
 import io.reactivex.functions.BiFunction
 import timber.log.Timber
 
