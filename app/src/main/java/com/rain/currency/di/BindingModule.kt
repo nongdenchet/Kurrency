@@ -1,7 +1,7 @@
 package com.rain.currency.di
 
-import com.rain.currency.di.scope.ConverterScope
-import com.rain.currency.ui.converter.ConverterModule
+import com.rain.currency.ui.converter.di.ConverterScope
+import com.rain.currency.ui.converter.di.ConverterModule
 import com.rain.currency.ui.converter.ConverterService
 import com.rain.currency.ui.setting.SettingActivity
 import dagger.Module

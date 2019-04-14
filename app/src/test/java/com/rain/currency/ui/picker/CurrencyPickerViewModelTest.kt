@@ -2,10 +2,10 @@ package com.rain.currency.ui.picker
 
 import androidx.collection.ArrayMap
 import com.jakewharton.rxrelay2.PublishRelay
+import com.rain.currency.data.mapper.CurrencyMapper
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.repo.CurrencyRepo
-import com.rain.currency.support.CurrencyMapper
 import io.reactivex.Single
 import org.junit.After
 import org.junit.Before
@@ -14,7 +14,6 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
-import java.util.Date
 
 class CurrencyPickerViewModelTest {
     private val keyword = PublishRelay.create<String>()
@@ -30,12 +29,12 @@ class CurrencyPickerViewModelTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
 
-        val currencies = androidx.collection.ArrayMap<String, Double>()
+        val currencies = ArrayMap<String, Double>()
         currencies["USD"] = 1.0
         currencies["VND"] = 1.0 / 20000
         currencies["SGD"] = 1.0 / 2
         `when`(currencyRepo.fetchExchange(ArgumentMatchers.anyBoolean())).thenReturn(
-                Single.just(Exchange("USD", Date(System.currentTimeMillis()), currencies)))
+                Single.just(Exchange(currencies)))
         `when`(currencyMapper.toInfo(ArgumentMatchers.anyString()))
                 .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
 

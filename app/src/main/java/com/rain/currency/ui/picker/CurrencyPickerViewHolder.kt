@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 
-class CurrencyPickerViewHolder(itemView: View, onClick: (Int) -> Unit) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+class CurrencyPickerViewHolder(itemView: View, onClick: (Int) -> Unit) : RecyclerView.ViewHolder(itemView) {
     @BindView(R.id.tvUnit)
     lateinit var tvUnit: TextView
     @BindView(R.id.tvSymbol)

@@ -5,7 +5,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.domain.ConverterData
 import com.rain.currency.domain.ConverterInteractor
-import com.rain.currency.support.CurrencyMapper
+import com.rain.currency.data.mapper.CurrencyMapper
 import com.rain.currency.ui.converter.reducer.ConverterCommand
 import com.rain.currency.ui.converter.reducer.ConverterReducer
 import com.rain.currency.ui.converter.reducer.ConverterState
@@ -16,9 +16,11 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-class ConverterViewModel constructor(private val reducer: ConverterReducer,
-                                     private val interactor: ConverterInteractor,
-                                     private val mapper: CurrencyMapper) {
+class ConverterViewModel(
+        private val reducer: ConverterReducer,
+        private val interactor: ConverterInteractor,
+        private val mapper: CurrencyMapper
+) {
     private val state = BehaviorRelay.createDefault(ConverterState.INIT_STATE)
     private var disposable: Disposable? = null
 
@@ -76,8 +78,8 @@ class ConverterViewModel constructor(private val reducer: ConverterReducer,
     }
 
     private fun combine(observable: Observable<String>): Observable<Pair<String, ConverterData>> {
-        return observable.withLatestFrom(getData(), BiFunction<String, ConverterData, Pair<String, ConverterData>> {
-            value, data -> Pair(value, data)
+        return observable.withLatestFrom(getData(), BiFunction<String, ConverterData, Pair<String, ConverterData>> { value, data ->
+            Pair(value, data)
         })
     }
 

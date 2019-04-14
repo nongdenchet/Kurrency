@@ -4,25 +4,19 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.rain.currency.data.model.Exchange
-import com.rain.currency.di.application.ApplicationScope
 import com.rain.currency.utils.getLocale
 import io.reactivex.Single
-import java.lang.IllegalStateException
-import javax.inject.Inject
 
-@ApplicationScope
-class CurrencyStore @Inject constructor(
+private const val BASE = "BASE"
+private const val TARGET = "TARGET"
+private const val DEFAULT = "USD"
+private const val EXCHANGE = "EXCHANGE"
+
+class CurrencyStore(
         private val context: Context,
         private val gson: Gson,
         private val sharedPreferences: SharedPreferences
 ) {
-    companion object {
-        val BASE = "BASE"
-        val TARGET = "TARGET"
-        val DEFAULT = "USD"
-        val EXCHANGE = "EXCHANGE"
-    }
-
     fun storeBaseUnit(value: String) {
         sharedPreferences.edit()
                 .putString(BASE, value)

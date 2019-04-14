@@ -3,8 +3,7 @@ package com.rain.currency.di
 import android.content.Context
 import com.google.gson.Gson
 import com.rain.currency.BuildConfig
-import com.rain.currency.data.network.CurrencyApi
-import com.rain.currency.di.application.ApplicationScope
+import com.rain.currency.data.api.CurrencyApi
 import com.rain.currency.support.NetworkManager
 import com.rain.currency.utils.Constant
 import dagger.Module
@@ -19,8 +18,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 @Module
-open class NetworkModule {
+object NetworkModule {
 
+    @JvmStatic
     @Provides
     @ApplicationScope
     fun provideHttpClient(networkManager: NetworkManager, context: Context): OkHttpClient {
@@ -69,16 +69,17 @@ open class NetworkModule {
 
             return@Interceptor if (networkManager.isNetworkAvailable()) {
                 originalResponse.newBuilder()
-                        .header("Cache-Control", "public, max-age=" + maxAge)
+                        .header("Cache-Control", "public, max-age=$maxAge")
                         .build()
             } else {
                 originalResponse.newBuilder()
-                        .header("Cache-Control", "public, only-if-cached, max-stale=" + maxAge)
+                        .header("Cache-Control", "public, only-if-cached, max-stale=$maxAge")
                         .build()
             }
         }
     }
 
+    @JvmStatic
     @Provides
     @ApplicationScope
     fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit {
@@ -90,9 +91,10 @@ open class NetworkModule {
                 .build()
     }
 
+    @JvmStatic
     @Provides
     @ApplicationScope
-    open fun provideCurrencyApi(retrofit: Retrofit): CurrencyApi {
+    fun provideCurrencyApi(retrofit: Retrofit): CurrencyApi {
         return retrofit.create(CurrencyApi::class.java)
     }
 }
