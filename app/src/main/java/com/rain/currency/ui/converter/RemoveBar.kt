@@ -3,8 +3,8 @@ package com.rain.currency.ui.converter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.ViewCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -19,16 +19,17 @@ class RemoveBar(private val context: Context) {
     private val resources = context.resources
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private val removeBar: FrameLayout = LayoutInflater.from(context).inflate(R.layout.remove_bar, null) as FrameLayout
-    val height = resources.getDimensionPixelSize(R.dimen.remove_bar_height)
+    private val height = resources.getDimensionPixelSize(R.dimen.remove_bar_height)
 
     init {
         removeBar.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height)
     }
 
-    fun update(x: Float, y: Float) {
+    fun update(y: Float) {
         removeBar.setBackgroundColor(ContextCompat.getColor(context,
-                if (y > getY() - height) R.color.red
-                else R.color.light_red))
+                if (y > getY()) R.color.red
+                else R.color.light_red)
+        )
     }
 
     private fun layoutParams(): WindowManager.LayoutParams {

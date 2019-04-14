@@ -10,9 +10,8 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.text.NumberFormat
-import javax.inject.Inject
 
-class ConverterInteractor @Inject constructor(private val currencyRepo: CurrencyRepo) {
+class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
     private val numberFormatter = NumberFormat.getNumberInstance()
 
     fun fetchCurrency(): Observable<ConverterCommand> {
@@ -46,7 +45,7 @@ class ConverterInteractor @Inject constructor(private val currencyRepo: Currency
             return@fromCallable data
         }
         return single.observeOn(Schedulers.io())
-                .doOnSuccess({ currencyRepo.storeTargetUnit(it.currency.targetUnit) })
+                .doOnSuccess { currencyRepo.storeTargetUnit(it.currency.targetUnit) }
                 .map { ConverterCommand.CurrencyResult(it) }
     }
 
@@ -87,7 +86,7 @@ class ConverterInteractor @Inject constructor(private val currencyRepo: Currency
             return@fromCallable data
         }
         return single.observeOn(Schedulers.io())
-                .doOnSuccess({ currencyRepo.storeBaseUnit(it.currency.baseUnit) })
+                .doOnSuccess { currencyRepo.storeBaseUnit(it.currency.baseUnit) }
                 .map { ConverterCommand.CurrencyResult(it) }
     }
 

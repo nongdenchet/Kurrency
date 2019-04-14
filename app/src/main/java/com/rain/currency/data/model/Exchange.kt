@@ -1,6 +1,5 @@
 package com.rain.currency.data.model
 
-import android.support.v4.util.ArrayMap
-import java.util.Date
+import androidx.collection.ArrayMap
 
-class Exchange(val base: String, val date: Date, val currencies: ArrayMap<String, Double>)
+class Exchange(val currencies: ArrayMap<String, Double>)

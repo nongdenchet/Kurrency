@@ -1,6 +1,6 @@
 package com.rain.currency.ui.picker
 
-import android.support.v7.recyclerview.extensions.ListAdapter
+import androidx.recyclerview.widget.ListAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.jakewharton.rxrelay2.PublishRelay

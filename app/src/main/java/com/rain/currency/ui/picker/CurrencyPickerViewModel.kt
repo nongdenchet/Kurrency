@@ -3,7 +3,7 @@ package com.rain.currency.ui.picker
 import com.jakewharton.rxrelay2.BehaviorRelay
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.repo.CurrencyRepo
-import com.rain.currency.support.CurrencyMapper
+import com.rain.currency.data.mapper.CurrencyMapper
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -11,8 +11,10 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import timber.log.Timber
 
-class CurrencyPickerViewModel(private val currencyRepo: CurrencyRepo,
-                              private val currencyMapper: CurrencyMapper) {
+class CurrencyPickerViewModel(
+        private val currencyRepo: CurrencyRepo,
+        private val currencyMapper: CurrencyMapper
+) {
     private val currencies = BehaviorRelay.create<List<CurrencyInfo>>()
     private val disposables = CompositeDisposable()
 
@@ -60,7 +62,9 @@ class CurrencyPickerViewModel(private val currencyRepo: CurrencyRepo,
     }
 
     private fun combine(keyword: String, currencies: List<String>): List<CurrencyInfo> {
-        return currencies.filter { it.contains(keyword) }
+        return currencies.asSequence()
+                .filter { it.contains(keyword) }
                 .map { currencyMapper.toInfo(it) }
+                .toList()
     }
 }

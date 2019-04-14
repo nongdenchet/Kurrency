@@ -1,22 +1,22 @@
-package com.rain.currency.support
+package com.rain.currency.data.mapper
 
 import android.content.Context
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
-import com.rain.currency.di.application.ApplicationScope
-import javax.inject.Inject
+import com.rain.currency.support.AssetLoader
 
-@ApplicationScope
-class CurrencyMapper @Inject constructor(private val context: Context, gson: Gson, assetLoader: AssetLoader) {
-    private val symbolMap: Map<String, String>
-
-    init {
+class CurrencyMapper(
+        private val context: Context,
+        private val gson: Gson,
+        private val assetLoader: AssetLoader
+) {
+    private val symbolMap: Map<String, String> by lazy {
         val symbolJson = assetLoader.readTextFile("symbols.json") ?: "{}"
         val type = object : TypeToken<Map<String, String>>() {}.type
-        symbolMap = gson.fromJson(symbolJson, type)
+        gson.fromJson<Map<String, String>>(symbolJson, type)
     }
 
     fun toInfo(value: String): CurrencyInfo {

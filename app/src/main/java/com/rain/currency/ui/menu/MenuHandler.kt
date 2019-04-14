@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.PopupWindowCompat
+import androidx.core.content.ContextCompat
+import androidx.core.widget.PopupWindowCompat
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -90,7 +90,7 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
     }
 
     private fun getMenus(editText: EditText): List<MenuStrategy> {
-        var menu = listOf<MenuStrategy>()
+        val menu = mutableListOf<MenuStrategy>()
 
         if (canPaste()) {
             menu += PasteStrategy(clipboardManager, editText)
@@ -111,7 +111,7 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
         }
 
         val primaryClip = clipboardManager.primaryClip
-
-        return primaryClip.itemCount > 0 && !primaryClip.getItemAt(0).text.isNullOrBlank()
+        return primaryClip != null && primaryClip.itemCount > 0
+                && !primaryClip.getItemAt(0).text.isNullOrBlank()
     }
 }

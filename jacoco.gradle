@@ -21,9 +21,7 @@ project.afterEvaluate {
             '**/*BR*.*',
             '**/*Adapter*.*',
             '**/*Fragment*.*',
-            '**/*Dialog*.*',
             '**/*Activity*.*',
-            '**/*Service*.*',
             '**/*ViewHolder*.*',
             '**/widgets/**',
             '**/Manifest*.*',
@@ -43,10 +41,9 @@ project.afterEvaluate {
         def createTask = { testTaskName, sourcePath ->
             task "${testTaskName}Coverage"(type: JacocoReport, dependsOn: "$testTaskName") {
                 group = "coverage"
-                def (flavor, buildType) = sourcePath.tokenize('/')
                 classDirectories = files(
                         fileTree(dir: "${project.buildDir}/intermediates/classes/${sourcePath}", excludes: excludes),
-                        fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${flavor}${buildType.capitalize()}", excludes: excludes)
+                        fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/${sourcePath}", excludes: excludes)
                 )
                 def coverageSourceDirs = [
                         "src/main/java"
@@ -77,8 +74,7 @@ project.afterEvaluate {
             tasks.add("${testTaskName}Coverage")
         }
 
-        // Create testCoverageTasks
-        task "testCoverage${productFlavorName.capitalize()}" {
+        task "testCoverage" {
             group = "coverage"
             tasks.each { taskName ->
                 dependsOn taskName

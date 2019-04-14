@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.rain.currency.utils
 
 import android.content.Context
@@ -6,7 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager

@@ -4,11 +4,12 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.rain.currency.ui.picker.di.DaggerCurrencyPickerComponent
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.jakewharton.rxrelay2.PublishRelay
@@ -68,8 +69,10 @@ class CurrencyPickerDialog(private val context: Context) {
     }
 
     private fun setUpDependency() {
-        (context.applicationContext as CurrencyApp).component
-                .plus(CurrencyPickerModule())
+        val app = context.applicationContext as CurrencyApp
+        DaggerCurrencyPickerComponent.builder()
+                .dependencies(app.component)
+                .build()
                 .inject(this)
     }
 
@@ -80,7 +83,9 @@ class CurrencyPickerDialog(private val context: Context) {
         dialog = AlertDialog.Builder(context)
                 .setView(view)
                 .create()
-        dialog.window.setType(getOverlayType())
+        dialog.window?.run {
+            setType(getOverlayType())
+        }
         dialog.setOnDismissListener {
             onDismiss?.invoke()
             disposables.clear()

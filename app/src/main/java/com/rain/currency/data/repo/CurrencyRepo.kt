@@ -1,21 +1,17 @@
 package com.rain.currency.data.repo
 
-import android.support.v4.util.ArrayMap
+import androidx.collection.ArrayMap
+import com.rain.currency.data.api.CurrencyApi
+import com.rain.currency.data.api.LiveCurrency
 import com.rain.currency.data.local.CurrencyStore
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.Exchange
-import com.rain.currency.data.network.CurrencyApi
-import com.rain.currency.data.network.LiveCurrency
-import com.rain.currency.di.application.ApplicationScope
 import com.rain.currency.support.NetworkManager
 import com.rain.currency.utils.exponentialBackoff
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import java.util.Date
-import javax.inject.Inject
 
-@ApplicationScope
-class CurrencyRepo @Inject constructor(
+class CurrencyRepo(
         private val networkManager: NetworkManager,
         private val currencyApi: CurrencyApi,
         private val currencyStore: CurrencyStore
@@ -61,7 +57,7 @@ class CurrencyRepo @Inject constructor(
             currencies[currency.key.substring(3)] = 1.0 / currency.value
         }
 
-        return Exchange(liveCurrency.source, Date(liveCurrency.timestamp), currencies)
+        return Exchange(currencies)
     }
 
     fun fetchLastCurrency(): Single<Currency> {

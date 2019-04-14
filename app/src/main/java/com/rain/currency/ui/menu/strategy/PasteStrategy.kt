@@ -21,8 +21,7 @@ class PasteStrategy(private val clipboardManager: ClipboardManager, private val 
         }
 
         val primaryClip = clipboardManager.primaryClip
-
-        if (primaryClip.itemCount == 0 || primaryClip.getItemAt(0).text.isNullOrBlank()) {
+        if (primaryClip == null || primaryClip.itemCount == 0 || primaryClip.getItemAt(0).text.isNullOrBlank()) {
             return
         }
 
