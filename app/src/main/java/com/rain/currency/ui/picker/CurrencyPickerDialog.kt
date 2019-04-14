@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.rain.currency.ui.picker.di.DaggerCurrencyPickerComponent
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.jakewharton.rxrelay2.PublishRelay
@@ -39,7 +40,7 @@ class CurrencyPickerDialog(private val context: Context) {
     lateinit var inputMethodManager: InputMethodManager
 
     @BindView(R.id.rvCurrencies)
-    lateinit var rvCurrencies: androidx.recyclerview.widget.RecyclerView
+    lateinit var rvCurrencies: RecyclerView
     @BindView(R.id.edtSearch)
     lateinit var edtSearch: EditText
 
@@ -68,8 +69,10 @@ class CurrencyPickerDialog(private val context: Context) {
     }
 
     private fun setUpDependency() {
-        (context.applicationContext as CurrencyApp).component
-                .plus(CurrencyPickerModule())
+        val app = context.applicationContext as CurrencyApp
+        DaggerCurrencyPickerComponent.builder()
+                .dependencies(app.component)
+                .build()
                 .inject(this)
     }
 
@@ -90,7 +93,7 @@ class CurrencyPickerDialog(private val context: Context) {
             edtSearch.setText("")
         }
         rvCurrencies.adapter = adapter
-        rvCurrencies.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        rvCurrencies.layoutManager = LinearLayoutManager(context)
     }
 
     fun getUnit(currencyType: CurrencyType): Observable<String> {

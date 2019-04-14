@@ -1,16 +1,14 @@
 package com.rain.currency.di
 
-import com.rain.currency.data.network.CurrencyApi
-import com.rain.currency.di.application.ApplicationScope
+import com.rain.currency.data.api.CurrencyApi
 import dagger.Module
 import dagger.Provides
 
 @Module
-class StubNetworkModule {
+object StubNetworkModule {
 
+    @JvmStatic
     @Provides
     @ApplicationScope
-    fun provideCurrencyApi(): CurrencyApi {
-        return StubCurrencyApi()
-    }
+    fun provideCurrencyApi(): CurrencyApi = StubCurrencyApi()
 }

@@ -1,4 +1,4 @@
-package com.rain.currency.di.scope
+package com.rain.currency.ui.converter.di
 
 import javax.inject.Scope
 

@@ -1,14 +1,14 @@
 package com.rain.currency.ui
 
-import androidx.collection.ArrayMap
 import android.view.View
+import androidx.collection.ArrayMap
 import com.jakewharton.rxrelay2.PublishRelay
+import com.rain.currency.data.mapper.CurrencyMapper
 import com.rain.currency.data.model.Currency
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.data.repo.CurrencyRepo
 import com.rain.currency.domain.ConverterInteractor
-import com.rain.currency.support.CurrencyMapper
 import com.rain.currency.ui.converter.ConverterViewModel
 import com.rain.currency.ui.converter.reducer.ConverterReducer
 import io.reactivex.Single
@@ -23,7 +23,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
-import java.util.Date
 
 class ConverterViewModelTest {
     private lateinit var converterViewModel: ConverterViewModel
@@ -59,7 +58,7 @@ class ConverterViewModelTest {
     }
 
     private fun mockData() {
-        val currencies = androidx.collection.ArrayMap<String, Double>()
+        val currencies = ArrayMap<String, Double>()
         currencies["USD"] = 1.0
         currencies["VND"] = 1.0 / 20000
         currencies["SGD"] = 1.0 / 2
@@ -67,7 +66,7 @@ class ConverterViewModelTest {
         `when`(currencyRepo.fetchLastCurrency()).thenReturn(
                 Single.just(Pair("USD", "VND")).map { Currency(baseUnit = it.first, targetUnit = it.second) })
         `when`(currencyRepo.fetchExchange(ArgumentMatchers.anyBoolean())).thenReturn(
-                Single.just(Exchange("USD", Date(System.currentTimeMillis()), currencies)))
+                Single.just(Exchange(currencies)))
         `when`(currencyMapper.toInfo(ArgumentMatchers.anyString()))
                 .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
     }

@@ -1,4 +1,4 @@
-package com.rain.currency.di.application
+package com.rain.currency.di
 
 import javax.inject.Scope
 

@@ -90,7 +90,7 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
     }
 
     private fun getMenus(editText: EditText): List<MenuStrategy> {
-        var menu = listOf<MenuStrategy>()
+        val menu = mutableListOf<MenuStrategy>()
 
         if (canPaste()) {
             menu += PasteStrategy(clipboardManager, editText)

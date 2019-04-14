@@ -1,25 +1,31 @@
 package com.rain.currency.ui.converter
 
 import android.content.Intent
-import android.content.SharedPreferences
-import androidx.test.InstrumentationRegistry
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.AndroidJUnit4
 import androidx.test.uiautomator.UiDevice
-import androidx.recyclerview.widget.RecyclerView
-import android.view.View
-import com.rain.currency.EspressoApp
 import com.rain.currency.R
+import com.rain.currency.ui.cleanSharePrefs
 import com.rain.currency.ui.ensureOverlayPermission
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.FixMethodOrder
@@ -28,14 +34,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 
-
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class ConverterServiceTest {
     private lateinit var device: UiDevice
     private lateinit var decorView: View
-    private lateinit var sharedPreferences: SharedPreferences
 
     @Rule
     @JvmField
@@ -43,17 +47,13 @@ class ConverterServiceTest {
 
     @Before
     fun setUp() {
-        sharedPreferences = (activityTestRule.activity.application as EspressoApp)
-                .component
-                .getSharePreferences()
-        sharedPreferences.edit()
-                .clear()
-                .apply()
-
+        cleanSharePrefs()
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        ensureOverlayPermission(activityTestRule.activity)
-        decorView = activityTestRule.activity.window.decorView
-        activityTestRule.activity.startService(intent())
+        activityTestRule.activity.run {
+            ensureOverlayPermission(this)
+            decorView = window.decorView
+            startService(intent())
+        }
     }
 
     private fun intent() = Intent(activityTestRule.activity, ConverterService::class.java)
@@ -112,7 +112,7 @@ class ConverterServiceTest {
                 .perform(replaceText("sgd"), closeSoftKeyboard())
         onView(allOf(withId(R.id.rvCurrencies)))
                 .inRoot(withDecorView(not(`is`(decorView))))
-                .perform(actionOnItemAtPosition<androidx.recyclerview.widget.RecyclerView.ViewHolder>(0, click()))
+                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
         onView(allOf(withId(R.id.edtBase)))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .perform(replaceText("20"))
@@ -135,8 +135,6 @@ class ConverterServiceTest {
     @After
     fun tearDown() {
         activityTestRule.activity.stopService(intent())
-        sharedPreferences.edit()
-                .clear()
-                .apply()
+        cleanSharePrefs()
     }
 }

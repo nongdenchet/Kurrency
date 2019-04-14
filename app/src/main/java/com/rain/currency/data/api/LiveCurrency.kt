@@ -1,4 +1,4 @@
-package com.rain.currency.data.network
+package com.rain.currency.data.api
 
 import com.google.gson.annotations.SerializedName
 
