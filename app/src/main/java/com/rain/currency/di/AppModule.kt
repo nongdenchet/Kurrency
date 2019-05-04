@@ -6,11 +6,11 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.view.inputmethod.InputMethodManager
-import com.google.gson.Gson
 import com.rain.currency.data.CurrencyModule
 import com.rain.currency.support.AssetLoader
 import com.rain.currency.support.NetworkManager
 import com.rain.currency.ui.menu.MenuHandler
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.android.AndroidInjectionModule
@@ -24,7 +24,11 @@ object AppModule {
 
     @JvmStatic
     @Provides
-    fun provideGson() = Gson()
+    @ApplicationScope
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder()
+                .build()
+    }
 
     @JvmStatic
     @Provides

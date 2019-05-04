@@ -2,9 +2,9 @@ package com.rain.currency.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
 import com.rain.currency.data.model.Exchange
 import com.rain.currency.utils.getLocale
+import com.squareup.moshi.Moshi
 import io.reactivex.Single
 
 private const val BASE = "BASE"
@@ -13,10 +13,12 @@ private const val DEFAULT = "USD"
 private const val EXCHANGE = "EXCHANGE"
 
 class CurrencyStore(
+        moshi: Moshi,
         private val context: Context,
-        private val gson: Gson,
         private val sharedPreferences: SharedPreferences
 ) {
+    private val adapter = moshi.adapter(Exchange::class.java)
+
     fun storeBaseUnit(value: String) {
         sharedPreferences.edit()
                 .putString(BASE, value)
@@ -38,7 +40,7 @@ class CurrencyStore(
 
     fun storeExchange(exchange: Exchange) {
         sharedPreferences.edit()
-                .putString(EXCHANGE, gson.toJson(exchange))
+                .putString(EXCHANGE, adapter.toJson(exchange))
                 .apply()
     }
 
@@ -46,7 +48,7 @@ class CurrencyStore(
         return Single.fromCallable {
             val exchange = sharedPreferences.getString(EXCHANGE, null) ?: throw IllegalStateException()
 
-            return@fromCallable gson.fromJson(exchange, Exchange::class.java)
+            return@fromCallable adapter.fromJson(exchange)
         }
     }
 

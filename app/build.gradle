@@ -64,9 +64,10 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
-    // Support
-    implementation 'com.google.code.gson:gson:2.8.5'
+    // Logging
     implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // Custom View
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
     // Crashlytics
@@ -99,9 +100,13 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     //noinspection GradleDependency
     implementation 'com.squareup.okhttp3:okhttp:3.12.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.5.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.5.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.2'
+
+    // Parsing
+    implementation 'com.squareup.moshi:moshi:1.8.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
 
     // Testing
     testImplementation 'junit:junit:4.12'
