@@ -1,9 +1,11 @@
 package com.rain.currency.data.api
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class LiveCurrency(
-        @SerializedName("timestamp") val timestamp: Long,
-        @SerializedName("source") val source: String,
-        @SerializedName("quotes") val quotes: Map<String, Double>
+        @Json(name = "timestamp") val timestamp: Long,
+        @Json(name = "source") val source: String,
+        @Json(name = "quotes") val quotes: Map<String, Double>
 )

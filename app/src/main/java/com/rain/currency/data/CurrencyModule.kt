@@ -2,7 +2,6 @@ package com.rain.currency.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
 import com.rain.currency.data.api.CurrencyApi
 import com.rain.currency.data.local.CurrencyStore
 import com.rain.currency.data.mapper.CurrencyMapper
@@ -10,6 +9,7 @@ import com.rain.currency.data.repo.CurrencyRepo
 import com.rain.currency.di.ApplicationScope
 import com.rain.currency.support.AssetLoader
 import com.rain.currency.support.NetworkManager
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 
@@ -20,12 +20,12 @@ object CurrencyModule {
     @Provides
     @ApplicationScope
     fun provideCurrencyStore(
+            moshi: Moshi,
             context: Context,
-            gson: Gson,
             sharedPreferences: SharedPreferences
     ) = CurrencyStore(
+            moshi,
             context,
-            gson,
             sharedPreferences
     )
 
@@ -34,9 +34,9 @@ object CurrencyModule {
     @ApplicationScope
     fun provideCurrencyMapper(
             context: Context,
-            gson: Gson,
+            moshi: Moshi,
             assetLoader: AssetLoader
-    ) = CurrencyMapper(context, gson, assetLoader)
+    ) = CurrencyMapper(context, moshi, assetLoader)
 
     @JvmStatic
     @Provides
