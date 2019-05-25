@@ -82,7 +82,7 @@ class ConverterViewModelTest {
         val output = bind()
         val observer = output.expand.test()
         moneyClicks.accept(1)
-        observer.assertValues(false, true)
+        observer.assertValues(true)
     }
 
     @Test
@@ -91,7 +91,7 @@ class ConverterViewModelTest {
         val observer = output.expand.test()
         moneyClicks.accept(1)
         backClicks.accept(1)
-        observer.assertValues(false, true, false)
+        observer.assertValues(true, false)
     }
 
     @Test
@@ -99,7 +99,7 @@ class ConverterViewModelTest {
         val output = bind()
         val observer = output.expand.test()
         backClicks.accept(1)
-        observer.assertValues(false)
+        observer.assertValues(true, false)
     }
 
     @Test

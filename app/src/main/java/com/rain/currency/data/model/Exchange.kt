@@ -1,5 +1,7 @@
 package com.rain.currency.data.model
 
-import androidx.collection.ArrayMap
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-class Exchange(val currencies: ArrayMap<String, Double>)
+@JsonClass(generateAdapter = true)
+class Exchange(@Json(name = "currencies") val currencies: Map<String, Double>)

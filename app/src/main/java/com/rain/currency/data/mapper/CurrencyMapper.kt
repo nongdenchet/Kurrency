@@ -2,21 +2,22 @@ package com.rain.currency.data.mapper
 
 import android.content.Context
 import androidx.annotation.DrawableRes
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.AssetLoader
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 
 class CurrencyMapper(
         private val context: Context,
-        private val gson: Gson,
+        private val moshi: Moshi,
         private val assetLoader: AssetLoader
 ) {
     private val symbolMap: Map<String, String> by lazy {
         val symbolJson = assetLoader.readTextFile("symbols.json") ?: "{}"
-        val type = object : TypeToken<Map<String, String>>() {}.type
-        gson.fromJson<Map<String, String>>(symbolJson, type)
+        val type = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
+        val adapter = moshi.adapter<Map<String, String>>(type)
+        adapter.fromJson(symbolJson) ?: emptyMap()
     }
 
     fun toInfo(value: String): CurrencyInfo {

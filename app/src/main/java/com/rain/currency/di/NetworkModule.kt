@@ -1,11 +1,11 @@
 package com.rain.currency.di
 
 import android.content.Context
-import com.google.gson.Gson
 import com.rain.currency.BuildConfig
 import com.rain.currency.data.api.CurrencyApi
 import com.rain.currency.support.NetworkManager
 import com.rain.currency.utils.Constant
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -14,7 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 
 @Module
@@ -82,11 +82,11 @@ object NetworkModule {
     @JvmStatic
     @Provides
     @ApplicationScope
-    fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient): Retrofit {
+    fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
                 .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
     }
