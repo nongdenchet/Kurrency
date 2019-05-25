@@ -63,6 +63,7 @@ class ConverterServiceTest {
             decorView = window.decorView
             startService(intent())
         }
+        Thread.sleep(1000)
     }
 
     private fun initMockWebServer() {
@@ -85,17 +86,19 @@ class ConverterServiceTest {
     private fun intent() = Intent(activityTestRule.activity, ConverterService::class.java)
 
     @Test
-    fun onInit_collapseContent() {
+    fun onInit_expandContent() {
         onView(withId(R.id.btnMoney))
                 .inRoot(withDecorView(not(`is`(decorView))))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
         onView(withId(R.id.content))
                 .inRoot(withDecorView(not(`is`(decorView))))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 
     @Test
     fun clickMoneyButton_expandContent() {
+        device.pressBack()
+        device.pressBack()
         onView(allOf(withId(R.id.btnMoney), isDisplayed()))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .perform(click())
@@ -109,14 +112,10 @@ class ConverterServiceTest {
 
     @Test
     fun pressBack_collapseContent() {
-        onView(allOf(withId(R.id.btnMoney), isDisplayed()))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .perform(click())
         onView(allOf(withId(R.id.edtBase)))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .perform(replaceText("20"), closeSoftKeyboard())
         device.pressBack()
-
         onView(withId(R.id.content))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
@@ -127,9 +126,6 @@ class ConverterServiceTest {
 
     @Test
     fun shouldConvertCorrectly() {
-        onView(allOf(withId(R.id.btnMoney), isDisplayed()))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .perform(click())
         onView(allOf(withId(R.id.ivBaseIcon)))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .perform(click())
@@ -145,7 +141,6 @@ class ConverterServiceTest {
         onView(allOf(withId(R.id.edtBase)))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .perform(closeSoftKeyboard())
-
         onView(allOf(withId(R.id.tvBaseUnit)))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .check(matches(withText("SGD")))

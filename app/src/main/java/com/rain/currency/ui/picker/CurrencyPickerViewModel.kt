@@ -1,11 +1,10 @@
 package com.rain.currency.ui.picker
 
 import com.jakewharton.rxrelay2.BehaviorRelay
+import com.rain.currency.data.mapper.CurrencyMapper
 import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.data.repo.CurrencyRepo
-import com.rain.currency.data.mapper.CurrencyMapper
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -44,17 +43,24 @@ class CurrencyPickerViewModel(
         disposables.clear()
     }
 
-    private fun getUnits(): Single<List<String>> {
+    private fun getUnits(): Observable<List<String>> {
         return currencyRepo.fetchExchange(true)
                 .map { it.currencies.keys }
                 .map { it.toList() }
                 .onErrorReturn { emptyList() }
+                .toObservable()
+    }
+
+    private fun keywords(keywordStream: Observable<String>): Observable<String> {
+        return keywordStream.map { it.toUpperCase() }
+                .map { it.trim() }
+                .startWith("")
     }
 
     private fun handleKeyword(keywordStream: Observable<String>): Disposable {
         return Observable.combineLatest(
-                keywordStream.map { it.toUpperCase() },
-                getUnits().toObservable(),
+                keywords(keywordStream),
+                getUnits(),
                 BiFunction<String, List<String>, List<CurrencyInfo>> { keyword, currencies ->
                     combine(keyword, currencies)
                 })
