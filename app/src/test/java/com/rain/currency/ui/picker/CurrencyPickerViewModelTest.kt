@@ -44,11 +44,12 @@ class CurrencyPickerViewModelTest {
     }
 
     @Test
-    fun shouldEmitEmptyList() {
+    fun shouldEmitFullList() {
         val output = bind(CurrencyType.BASE)
         output.currencies
                 .test()
-                .assertEmpty()
+                .assertValue { it.size == 3 }
+                .dispose()
     }
 
     @Test
@@ -58,6 +59,7 @@ class CurrencyPickerViewModelTest {
         output.currencies
                 .test()
                 .assertValue { it.size == 3 }
+                .dispose()
     }
 
     @Test
@@ -67,6 +69,7 @@ class CurrencyPickerViewModelTest {
         output.currencies
                 .test()
                 .assertValue { it.isEmpty() }
+                .dispose()
     }
 
     @Test
@@ -76,6 +79,7 @@ class CurrencyPickerViewModelTest {
         output.currencies
                 .test()
                 .assertValue { it.size == 1 }
+                .dispose()
     }
 
     @Test
