@@ -11,7 +11,6 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -63,7 +62,6 @@ class ConverterServiceTest {
             decorView = window.decorView
             startService(intent())
         }
-        Thread.sleep(1000)
     }
 
     private fun initMockWebServer() {
@@ -86,40 +84,11 @@ class ConverterServiceTest {
     private fun intent() = Intent(activityTestRule.activity, ConverterService::class.java)
 
     @Test
-    fun onInit_expandContent() {
+    fun firstOpenShouldExpand() {
         onView(withId(R.id.btnMoney))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
         onView(withId(R.id.content))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-    }
-
-    @Test
-    fun clickMoneyButton_expandContent() {
-        device.pressBack()
-        device.pressBack()
-        onView(allOf(withId(R.id.btnMoney), isDisplayed()))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .perform(click())
-        onView(withId(R.id.content))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-        onView(withId(R.id.btnMoney))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
-    }
-
-    @Test
-    fun pressBack_collapseContent() {
-        onView(allOf(withId(R.id.edtBase)))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .perform(replaceText("20"), closeSoftKeyboard())
-        device.pressBack()
-        onView(withId(R.id.content))
-                .inRoot(withDecorView(not(`is`(decorView))))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
-        onView(withId(R.id.btnMoney))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
