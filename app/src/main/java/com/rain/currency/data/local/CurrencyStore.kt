@@ -1,5 +1,6 @@
 package com.rain.currency.data.local
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import com.rain.currency.data.model.Exchange
@@ -33,8 +34,8 @@ class CurrencyStore(
 
     fun getCurrencies(): Pair<String, String> {
         return Pair(
-                sharedPreferences.getString(BASE, DEFAULT),
-                sharedPreferences.getString(TARGET, getLocalCurrency())
+                sharedPreferences.getString(BASE, DEFAULT) ?: DEFAULT,
+                sharedPreferences.getString(TARGET, getLocalCurrency()) ?: getLocalCurrency()
         )
     }
 
@@ -46,12 +47,14 @@ class CurrencyStore(
 
     fun getExchange(): Single<Exchange> {
         return Single.fromCallable {
-            val exchange = sharedPreferences.getString(EXCHANGE, null) ?: throw IllegalStateException()
+            val exchange = sharedPreferences.getString(EXCHANGE, null)
+                    ?: throw IllegalStateException()
 
             return@fromCallable adapter.fromJson(exchange)
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private fun getLocalCurrency(): String {
         val currency = java.util.Currency.getInstance(getLocale(context))
         return currency.currencyCode.toUpperCase()

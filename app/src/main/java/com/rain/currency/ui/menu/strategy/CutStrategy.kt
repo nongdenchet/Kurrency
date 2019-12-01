@@ -10,7 +10,7 @@ class CutStrategy(private val clipboardManager: ClipboardManager, private val ed
     override fun menuType() = MenuType.CUT
 
     override fun execute() {
-        clipboardManager.primaryClip = ClipData.newPlainText(MenuType.CUT.name, editText.text)
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(MenuType.CUT.name, editText.text))
         editText.requestFocus()
         editText.setText("")
     }
