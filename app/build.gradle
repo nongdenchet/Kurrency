@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'jacoco'
 
@@ -14,8 +15,8 @@ android {
         applicationId "com.rain.currency"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.1.0"
 
         buildConfigField "String", "BASE_URL", '"https://kurrency.herokuapp.com/api/"'
 
@@ -70,8 +71,9 @@ dependencies {
     // Custom View
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
-    // Crashlytics
+    // Firebase
     implementation 'com.google.firebase:firebase-crashlytics:17.0.1'
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
 
     // Image Handling
     implementation 'com.github.bumptech.glide:glide:4.9.0'
@@ -97,15 +99,15 @@ dependencies {
 
     // Networking
     implementation 'com.squareup.retrofit2:retrofit:2.6.4'
-    //noinspection GradleDependency
-    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
     implementation 'com.squareup.retrofit2:converter-moshi:2.5.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.4'
+    //noinspection GradleDependency
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.10'
 
     // Parsing
-    implementation 'com.squareup.moshi:moshi:1.9.2'
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
+    implementation 'com.squareup.moshi:moshi:1.9.3'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.9.3'
 
     // Testing
     testImplementation 'junit:junit:4.12'
