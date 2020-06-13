@@ -1,11 +1,8 @@
 package com.rain.currency.ui.menu
 
-enum class MenuType {
-    COPY, PASTE, CUT, CLEAR;
-
-    override fun toString(): String {
-        return super.toString()
-            .toLowerCase()
-            .capitalize()
-    }
+enum class MenuType(val value: String) {
+    COPY("Copy"),
+    PASTE("Paste"),
+    CUT("Cut"),
+    CLEAR("Clear");
 }

@@ -16,7 +16,8 @@
         android:hint="@string/search"
         android:inputType="text"
         android:textColor="@color/black"
-        tools:ignore="LabelFor" />
+        tools:ignore="LabelFor"
+        android:importantForAutofill="no" />
 
     <View
         android:id="@+id/divider"

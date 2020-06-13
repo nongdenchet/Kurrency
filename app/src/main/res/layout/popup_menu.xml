@@ -13,5 +13,6 @@
         android:elevation="@dimen/floating_margin"
         android:orientation="vertical"
         tools:layout_height="100dp"
-        tools:layout_width="100dp" />
+        tools:layout_width="100dp"
+        tools:targetApi="lollipop" />
 </FrameLayout>

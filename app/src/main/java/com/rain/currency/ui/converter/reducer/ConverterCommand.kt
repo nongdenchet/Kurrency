@@ -8,7 +8,7 @@ sealed class ConverterCommand {
 
     class CurrencyResult(val data: ConverterData) : ConverterCommand()
 
-    class CurrencyLoading : ConverterCommand()
+    object CurrencyLoading : ConverterCommand()
 
     class ChangeExpand(val expand: Boolean) : ConverterCommand()
 

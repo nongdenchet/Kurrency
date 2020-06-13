@@ -34,7 +34,7 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
             val menuItem = layoutInflater.inflate(R.layout.item_menu, container, false)
             val tvMenu = menuItem.findViewById<TextView>(R.id.tvMenu)
 
-            tvMenu.text = menu.menuType().toString()
+            tvMenu.text = menu.menuType().value
             tvMenu.setOnClickListener {
                 menu.execute()
                 dismiss()

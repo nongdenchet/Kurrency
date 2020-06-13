@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.graphics.Point
+import android.os.IBinder
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -29,7 +30,7 @@ abstract class OverlayService : Service(), View.OnTouchListener {
     private var moving: Boolean = false
     private var startClickTime = 0L
 
-    override fun onBind(intent: Intent) = null
+    override fun onBind(intent: Intent): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) = START_NOT_STICKY
 

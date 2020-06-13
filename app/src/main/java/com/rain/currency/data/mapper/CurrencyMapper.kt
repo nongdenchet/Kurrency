@@ -7,6 +7,7 @@ import com.rain.currency.data.model.CurrencyInfo
 import com.rain.currency.support.AssetLoader
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import java.util.Locale
 
 class CurrencyMapper(
     private val context: Context,
@@ -35,7 +36,7 @@ class CurrencyMapper(
 
     @DrawableRes
     private fun toIcon(value: String): Int {
-        val iconName = "ic_${value.toLowerCase()}"
+        val iconName = "ic_${value.toLowerCase(Locale.getDefault())}"
         val resId = context.resources.getIdentifier(iconName, "drawable", context.packageName)
 
         return if (resId != 0)

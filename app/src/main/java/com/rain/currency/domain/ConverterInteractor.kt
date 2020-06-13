@@ -21,7 +21,7 @@ class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
             })
             .toObservable()
             .map<ConverterCommand> { ConverterCommand.CurrencyContent(it) }
-            .startWith(ConverterCommand.CurrencyLoading())
+            .startWith(ConverterCommand.CurrencyLoading)
             .onErrorReturn { ConverterCommand.CurrencyError(it) }
     }
 

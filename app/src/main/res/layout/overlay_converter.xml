@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/floating_margin"
         android:background="@drawable/border"
-        android:elevation="@dimen/floating_margin">
+        android:elevation="@dimen/floating_margin"
+        tools:targetApi="lollipop">
 
         <LinearLayout
             android:id="@+id/content"
@@ -53,7 +54,8 @@
                     style="@style/Text.EditText.Decimal"
                     android:layout_height="wrap_content"
                     android:textCursorDrawable="@null"
-                    tools:ignore="LabelFor" />
+                    tools:ignore="LabelFor"
+                    android:importantForAutofill="no" />
 
                 <TextView
                     android:id="@+id/tvBaseSymbol"
@@ -100,7 +102,8 @@
                     style="@style/Text.EditText.Decimal"
                     android:layout_height="wrap_content"
                     android:textCursorDrawable="@null"
-                    tools:ignore="LabelFor" />
+                    tools:ignore="LabelFor"
+                    android:importantForAutofill="no" />
 
                 <TextView
                     android:id="@+id/tvTargetSymbol"
@@ -146,5 +149,6 @@
         app:civ_border_color="@android:color/white"
         app:civ_border_width="1dp"
         app:civ_fill_color="@color/colorPrimary"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        tools:targetApi="lollipop" />
 </RelativeLayout>

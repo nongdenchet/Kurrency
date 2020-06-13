@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.rain.currency">
 
-    <application android:usesCleartextTraffic="true">
+    <application
+        android:usesCleartextTraffic="true"
+        tools:ignore="AllowBackup,UnusedAttribute">
         <activity android:name=".ui.menu.MenuActivity" />
         <activity android:name=".ui.converter.ConverterActivity" />
     </application>
