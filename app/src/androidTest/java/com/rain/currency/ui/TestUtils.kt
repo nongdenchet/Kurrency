@@ -29,9 +29,9 @@ fun ensureOverlayPermission(activity: Activity) {
 fun cleanSharePrefs() {
     val context: Context = ApplicationProvider.getApplicationContext()
     context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
-            .edit()
-            .clear()
-            .commit()
+        .edit()
+        .clear()
+        .commit()
 }
 
 fun getMockServerPort() = URL(BuildConfig.BASE_URL).port

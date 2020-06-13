@@ -34,13 +34,16 @@ class CurrencyPickerDialog(private val context: Context) {
 
     @Inject
     lateinit var adapter: CurrencyPickerAdapter
+
     @Inject
     lateinit var viewModel: CurrencyPickerViewModel
+
     @Inject
     lateinit var inputMethodManager: InputMethodManager
 
     @BindView(R.id.rvCurrencies)
     lateinit var rvCurrencies: RecyclerView
+
     @BindView(R.id.edtSearch)
     lateinit var edtSearch: EditText
 
@@ -51,38 +54,40 @@ class CurrencyPickerDialog(private val context: Context) {
 
     private fun bindViewModel(currencyType: CurrencyType) {
         val input = CurrencyPickerViewModel.Input(
-                currencyType,
-                getStreamText(edtSearch),
-                adapter.itemClicks()
+            currencyType,
+            getStreamText(edtSearch),
+            adapter.itemClicks()
         )
         val output = viewModel.bind(input)
 
         disposables.add(output.currencies
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ adapter.submitList(it) }, Timber::e))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ adapter.submitList(it) }, Timber::e)
+        )
         disposables.add(output.result
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    result.accept(it)
-                    dialog.dismiss()
-                }, Timber::e))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                result.accept(it)
+                dialog.dismiss()
+            }, Timber::e)
+        )
     }
 
     private fun setUpDependency() {
         val app = context.applicationContext as CurrencyApp
         DaggerCurrencyPickerComponent.builder()
-                .dependencies(app.component)
-                .build()
-                .inject(this)
+            .dependencies(app.component)
+            .build()
+            .inject(this)
     }
 
     private fun setUpView() {
         val view = LayoutInflater.from(context)
-                .inflate(R.layout.dialog_currency_picker, null, false)
+            .inflate(R.layout.dialog_currency_picker, null, false)
         ButterKnife.bind(this, view)
         dialog = AlertDialog.Builder(context)
-                .setView(view)
-                .create()
+            .setView(view)
+            .create()
         dialog.window?.run {
             setType(getOverlayType())
         }
@@ -98,9 +103,9 @@ class CurrencyPickerDialog(private val context: Context) {
 
     fun getUnit(currencyType: CurrencyType): Observable<String> {
         return result.hide()
-                .filter { it.first == currencyType }
-                .map { it.second }
-                .map { it.unit }
+            .filter { it.first == currencyType }
+            .map { it.second }
+            .map { it.unit }
     }
 
     fun show(currencyType: CurrencyType) {

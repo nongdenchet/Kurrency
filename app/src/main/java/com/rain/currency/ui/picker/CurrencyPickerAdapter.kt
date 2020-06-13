@@ -8,11 +8,13 @@ import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 import io.reactivex.Observable
 
-class CurrencyPickerAdapter : ListAdapter<CurrencyInfo, CurrencyPickerViewHolder>(CurrencyPickerDiffCallback()) {
+class CurrencyPickerAdapter :
+    ListAdapter<CurrencyInfo, CurrencyPickerViewHolder>(CurrencyPickerDiffCallback()) {
     private val itemClicks = PublishRelay.create<Int>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrencyPickerViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_currency, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_currency, parent, false)
 
         return CurrencyPickerViewHolder(view) { itemClicks.accept(it) }
     }

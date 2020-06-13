@@ -32,13 +32,14 @@ class IntroActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         disposables.add(Observable.interval(500, TimeUnit.MILLISECONDS)
-                .startWith(0)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (hasOverlayPermission(this)) {
-                        finishIntro()
-                    }
-                }, Timber::e))
+            .startWith(0)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (hasOverlayPermission(this)) {
+                    finishIntro()
+                }
+            }, Timber::e)
+        )
     }
 
     override fun onPause() {

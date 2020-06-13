@@ -47,10 +47,13 @@ fun toOverlayPermission(context: Context) {
     }
 }
 
-fun exponentialBackoff(times: Int, delay: Long): Function<in Flowable<Throwable>, out Publisher<*>> {
+fun exponentialBackoff(
+    times: Int,
+    delay: Long
+): Function<in Flowable<Throwable>, out Publisher<*>> {
     return Function { error ->
         error.zipWith(Flowable.range(1, times), BiFunction<Throwable, Int, Int> { _, i -> i })
-                .flatMap { Flowable.timer(delay * it, TimeUnit.SECONDS) }
+            .flatMap { Flowable.timer(delay * it, TimeUnit.SECONDS) }
     }
 }
 
@@ -69,8 +72,8 @@ fun setMoney(editText: EditText, value: String) {
 
 fun loadIcon(imageView: ImageView, @DrawableRes icon: Int) {
     Glide.with(imageView.context)
-            .load(icon)
-            .into(imageView)
+        .load(icon)
+        .into(imageView)
 }
 
 fun getOverlayType(): Int {
@@ -88,12 +91,12 @@ fun getScreenSize(windowManager: WindowManager): DisplayMetrics {
 
 fun getStreamText(editText: EditText): Observable<String> {
     return RxTextView.textChangeEvents(editText)
-            .filter { editText.isFocused }
-            .distinctUntilChanged()
-            .sample(300, TimeUnit.MILLISECONDS)
-            .map { it.text() }
-            .map { it.toString() }
-            .subscribeOn(AndroidSchedulers.mainThread())
+        .filter { editText.isFocused }
+        .distinctUntilChanged()
+        .sample(300, TimeUnit.MILLISECONDS)
+        .map { it.text() }
+        .map { it.toString() }
+        .subscribeOn(AndroidSchedulers.mainThread())
 }
 
 fun getLocale(context: Context): Locale {
@@ -106,6 +109,6 @@ fun getLocale(context: Context): Locale {
 
 fun getClicks(view: View): Observable<Any> {
     return RxView.clicks(view)
-            .throttleFirst(300, TimeUnit.MILLISECONDS)
-            .subscribeOn(AndroidSchedulers.mainThread())
+        .throttleFirst(300, TimeUnit.MILLISECONDS)
+        .subscribeOn(AndroidSchedulers.mainThread())
 }

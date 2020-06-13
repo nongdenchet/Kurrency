@@ -18,7 +18,8 @@ import com.rain.currency.utils.getScreenSize
 class RemoveBar(private val context: Context) {
     private val resources = context.resources
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    private val removeBar: FrameLayout = LayoutInflater.from(context).inflate(R.layout.remove_bar, null) as FrameLayout
+    private val removeBar: FrameLayout =
+        LayoutInflater.from(context).inflate(R.layout.remove_bar, null) as FrameLayout
     private val height = resources.getDimensionPixelSize(R.dimen.remove_bar_height)
 
     init {
@@ -26,9 +27,12 @@ class RemoveBar(private val context: Context) {
     }
 
     fun update(y: Float) {
-        removeBar.setBackgroundColor(ContextCompat.getColor(context,
+        removeBar.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
                 if (y > getY()) R.color.red
-                else R.color.light_red)
+                else R.color.light_red
+            )
         )
     }
 

@@ -17,9 +17,9 @@ object ConverterModule {
     @Provides
     @ConverterScope
     fun provideConverterViewModel(
-            reducer: ConverterReducer,
-            interactor: ConverterInteractor,
-            currencyMapper: CurrencyMapper
+        reducer: ConverterReducer,
+        interactor: ConverterInteractor,
+        currencyMapper: CurrencyMapper
     ) = ConverterViewModel(reducer, interactor, currencyMapper)
 
     @JvmStatic

@@ -6,7 +6,8 @@ import android.widget.EditText
 import com.rain.currency.ui.menu.MenuStrategy
 import com.rain.currency.ui.menu.MenuType
 
-class CutStrategy(private val clipboardManager: ClipboardManager, private val editText: EditText) : MenuStrategy {
+class CutStrategy(private val clipboardManager: ClipboardManager, private val editText: EditText) :
+    MenuStrategy {
     override fun menuType() = MenuType.CUT
 
     override fun execute() {

@@ -54,7 +54,7 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
         val context = editText.context
         val resources = context.resources
         val estimateHeight = resources.getDimensionPixelSize(R.dimen.size_normal) +
-                resources.getDimensionPixelSize(R.dimen.space_small) * 2
+            resources.getDimensionPixelSize(R.dimen.space_small) * 2
         val estimateWidth = resources.getDimensionPixelSize(R.dimen.min_menu_width)
         val margin = resources.getDimensionPixelSize(R.dimen.space_normal)
 
@@ -74,7 +74,14 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
                 popup.isOutsideTouchable = true
                 popup.isFocusable = true
                 popup.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
-                popup.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent)))
+                popup.setBackgroundDrawable(
+                    ColorDrawable(
+                        ContextCompat.getColor(
+                            context,
+                            android.R.color.transparent
+                        )
+                    )
+                )
                 PopupWindowCompat.setWindowLayoutType(popup, getOverlayType())
                 PopupWindowCompat.setOverlapAnchor(popup, true)
 
@@ -112,6 +119,6 @@ class MenuHandler(private val clipboardManager: ClipboardManager) {
 
         val primaryClip = clipboardManager.primaryClip
         return primaryClip != null && primaryClip.itemCount > 0
-                && !primaryClip.getItemAt(0).text.isNullOrBlank()
+            && !primaryClip.getItemAt(0).text.isNullOrBlank()
     }
 }

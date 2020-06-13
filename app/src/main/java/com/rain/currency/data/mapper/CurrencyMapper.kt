@@ -9,22 +9,23 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 
 class CurrencyMapper(
-        private val context: Context,
-        private val moshi: Moshi,
-        private val assetLoader: AssetLoader
+    private val context: Context,
+    private val moshi: Moshi,
+    private val assetLoader: AssetLoader
 ) {
     private val symbolMap: Map<String, String> by lazy {
         val symbolJson = assetLoader.readTextFile("symbols.json") ?: "{}"
-        val type = Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
+        val type =
+            Types.newParameterizedType(Map::class.java, String::class.java, String::class.java)
         val adapter = moshi.adapter<Map<String, String>>(type)
         adapter.fromJson(symbolJson) ?: emptyMap()
     }
 
     fun toInfo(value: String): CurrencyInfo {
         return CurrencyInfo(
-                value,
-                toSymbol(value),
-                toIcon(value)
+            value,
+            toSymbol(value),
+            toIcon(value)
         )
     }
 

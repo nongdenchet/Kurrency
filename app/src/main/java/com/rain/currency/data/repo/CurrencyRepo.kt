@@ -12,9 +12,9 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 class CurrencyRepo(
-        private val networkManager: NetworkManager,
-        private val currencyApi: CurrencyApi,
-        private val currencyStore: CurrencyStore
+    private val networkManager: NetworkManager,
+    private val currencyApi: CurrencyApi,
+    private val currencyStore: CurrencyStore
 ) {
     private var cache: Exchange? = null
 
@@ -24,7 +24,7 @@ class CurrencyRepo(
         }
 
         return getCurrency().doOnSuccess { cache = it }
-                .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.io())
     }
 
     private fun getCurrency(): Single<Exchange> {
@@ -41,9 +41,9 @@ class CurrencyRepo(
 
     private fun getRemoteCurrency(): Single<Exchange> {
         return currencyApi.getLiveCurrency()
-                .retryWhen(exponentialBackoff(3, 1))
-                .map { toExchange(it) }
-                .doOnSuccess { currencyStore.storeExchange(it) }
+            .retryWhen(exponentialBackoff(3, 1))
+            .map { toExchange(it) }
+            .doOnSuccess { currencyStore.storeExchange(it) }
     }
 
     fun storeBaseUnit(value: String) = currencyStore.storeBaseUnit(value)
@@ -62,6 +62,6 @@ class CurrencyRepo(
 
     fun fetchLastCurrency(): Single<Currency> {
         return Single.just(currencyStore.getCurrencies())
-                .map { Currency(baseUnit = it.first, targetUnit = it.second) }
+            .map { Currency(baseUnit = it.first, targetUnit = it.second) }
     }
 }

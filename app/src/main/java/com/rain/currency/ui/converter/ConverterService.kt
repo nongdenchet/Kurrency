@@ -47,37 +47,52 @@ class ConverterService : OverlayService() {
 
     @BindView(R.id.pbLoading)
     lateinit var pbLoading: ProgressBar
+
     @BindView(R.id.edtBase)
     lateinit var edtBase: EditText
+
     @BindView(R.id.edtTarget)
     lateinit var edtTarget: EditText
+
     @BindView(R.id.container)
     lateinit var container: ViewGroup
+
     @BindView(R.id.content)
     lateinit var content: ViewGroup
+
     @BindView(R.id.btnMoney)
     lateinit var btnMoney: ImageView
+
     @BindView(R.id.btnRetry)
     lateinit var btnRetry: TextView
+
     @BindView(R.id.ivBaseIcon)
     lateinit var ivBaseIcon: ImageView
+
     @BindView(R.id.ivTargetIcon)
     lateinit var ivTargetIcon: ImageView
+
     @BindView(R.id.tvBaseSymbol)
     lateinit var tvBaseSymbol: TextView
+
     @BindView(R.id.tvTargetSymbol)
     lateinit var tvTargetSymbol: TextView
+
     @BindView(R.id.tvBaseUnit)
     lateinit var tvBaseUnit: TextView
+
     @BindView(R.id.tvTargetUnit)
     lateinit var tvTargetUnit: TextView
 
     @Inject
     lateinit var viewModel: ConverterViewModel
+
     @Inject
     lateinit var currencyPicker: CurrencyPickerDialog
+
     @Inject
     lateinit var inputMethodManager: InputMethodManager
+
     @Inject
     lateinit var menuHandler: MenuHandler
 
@@ -139,32 +154,32 @@ class ConverterService : OverlayService() {
 
     private fun bindViewModel() {
         val input = ConverterViewModel.Input(
-                getClicks(btnRetry),
-                getClicks(btnMoney),
-                getStreamText(edtBase),
-                getStreamText(edtTarget),
-                currencyPicker.getUnit(CurrencyType.BASE),
-                currencyPicker.getUnit(CurrencyType.TARGET),
-                backClicks.hide()
+            getClicks(btnRetry),
+            getClicks(btnMoney),
+            getStreamText(edtBase),
+            getStreamText(edtTarget),
+            currencyPicker.getUnit(CurrencyType.BASE),
+            currencyPicker.getUnit(CurrencyType.TARGET),
+            backClicks.hide()
         )
         val output = viewModel.bind(input)
         disposables.addAll(
-                output.baseResult.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ setMoney(edtBase, it) }, Timber::e),
-                output.targetResult.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ setMoney(edtTarget, it) }, Timber::e),
-                output.baseCurrency.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ bindBaseCurrency(it) }, Timber::e),
-                output.targetCurrency.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ bindTargetCurrency(it) }, Timber::e),
-                output.showContent.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ bindContent(it) }, Timber::e),
-                output.loadingVisibility.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ pbLoading.visibility = it }, Timber::e),
-                output.errorVisibility.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ btnRetry.visibility = it }, Timber::e),
-                output.expand.observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ bindExpand(it) }, Timber::e)
+            output.baseResult.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ setMoney(edtBase, it) }, Timber::e),
+            output.targetResult.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ setMoney(edtTarget, it) }, Timber::e),
+            output.baseCurrency.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ bindBaseCurrency(it) }, Timber::e),
+            output.targetCurrency.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ bindTargetCurrency(it) }, Timber::e),
+            output.showContent.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ bindContent(it) }, Timber::e),
+            output.loadingVisibility.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ pbLoading.visibility = it }, Timber::e),
+            output.errorVisibility.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ btnRetry.visibility = it }, Timber::e),
+            output.expand.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ bindExpand(it) }, Timber::e)
         )
     }
 
@@ -212,9 +227,9 @@ class ConverterService : OverlayService() {
     private fun blurMoneyButton() {
         hidingDisposable?.dispose()
         hidingDisposable = Observable.just(0)
-                .delay(2, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ btnMoney.alpha = 0.25f }, Timber::e)
+            .delay(2, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ btnMoney.alpha = 0.25f }, Timber::e)
     }
 
     override fun onBackPressed(): Boolean {
@@ -235,7 +250,7 @@ class ConverterService : OverlayService() {
 
     override fun onCreateView(window: ViewGroup): View {
         return LayoutInflater.from(this)
-                .inflate(R.layout.overlay_converter, window, false)
+            .inflate(R.layout.overlay_converter, window, false)
     }
 
     private fun showContent() {
@@ -265,7 +280,9 @@ class ConverterService : OverlayService() {
 
     override fun getInitPosition(): Point {
         val screenSize = getScreenSize(windowManager)
-        return Point(screenSize.widthPixels, screenSize.heightPixels / 4 - resources
-                .getDimensionPixelSize(R.dimen.button_money_size) / 2)
+        return Point(
+            screenSize.widthPixels, screenSize.heightPixels / 4 - resources
+                .getDimensionPixelSize(R.dimen.button_money_size) / 2
+        )
     }
 }

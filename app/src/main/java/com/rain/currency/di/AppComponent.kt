@@ -7,10 +7,12 @@ import dagger.BindsInstance
 import dagger.Component
 
 @ApplicationScope
-@Component(modules = [
-    AppModule::class,
-    NetworkModule::class
-])
+@Component(
+    modules = [
+        AppModule::class,
+        NetworkModule::class
+    ]
+)
 interface AppComponent : CurrencyPickerDependencies {
 
     @Component.Builder

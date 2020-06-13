@@ -10,11 +10,14 @@ import com.bumptech.glide.Glide
 import com.rain.currency.R
 import com.rain.currency.data.model.CurrencyInfo
 
-class CurrencyPickerViewHolder(itemView: View, onClick: (Int) -> Unit) : RecyclerView.ViewHolder(itemView) {
+class CurrencyPickerViewHolder(itemView: View, onClick: (Int) -> Unit) :
+    RecyclerView.ViewHolder(itemView) {
     @BindView(R.id.tvUnit)
     lateinit var tvUnit: TextView
+
     @BindView(R.id.tvSymbol)
     lateinit var tvSymbol: TextView
+
     @BindView(R.id.ivIcon)
     lateinit var ivIcon: ImageView
 
@@ -28,8 +31,8 @@ class CurrencyPickerViewHolder(itemView: View, onClick: (Int) -> Unit) : Recycle
             tvUnit.text = unit
             tvSymbol.text = symbol
             Glide.with(itemView.context)
-                    .load(icon)
-                    .into(ivIcon)
+                .load(icon)
+                .into(ivIcon)
         }
     }
 }

@@ -8,33 +8,36 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.withLatestFrom
 import timber.log.Timber
+import java.util.Locale
 
 class CurrencyPickerViewModel(
-        private val currencyRepo: CurrencyRepo,
-        private val currencyMapper: CurrencyMapper
+    private val currencyRepo: CurrencyRepo,
+    private val currencyMapper: CurrencyMapper
 ) {
     private val currencies = BehaviorRelay.create<List<CurrencyInfo>>()
     private val disposables = CompositeDisposable()
 
     class Input(
-            val currencyType: CurrencyType,
-            val keyword: Observable<String>,
-            val itemSelection: Observable<Int>
+        val currencyType: CurrencyType,
+        val keyword: Observable<String>,
+        val itemSelection: Observable<Int>
     )
 
     class Output(
-            val currencies: Observable<List<CurrencyInfo>>,
-            val result: Observable<Pair<CurrencyType, CurrencyInfo>>
+        val currencies: Observable<List<CurrencyInfo>>,
+        val result: Observable<Pair<CurrencyType, CurrencyInfo>>
     )
 
     fun bind(input: Input): Output {
         disposables.add(handleKeyword(input.keyword))
 
         val result = input.itemSelection
-                .filter { it < currencies.value.size }
-                .map { currencies.value[it] }
-                .map { Pair(input.currencyType, it) }
+            .withLatestFrom(currencies)
+            .filter { (selection, currencies) -> selection < currencies.size }
+            .map { (selection, currencies) -> currencies[selection] }
+            .map { Pair(input.currencyType, it) }
 
         return Output(currencies.hide(), result)
     }
@@ -45,32 +48,32 @@ class CurrencyPickerViewModel(
 
     private fun getUnits(): Observable<List<String>> {
         return currencyRepo.fetchExchange(true)
-                .map { it.currencies.keys }
-                .map { it.toList() }
-                .onErrorReturn { emptyList() }
-                .toObservable()
+            .map { it.currencies.keys }
+            .map { it.toList() }
+            .onErrorReturn { emptyList() }
+            .toObservable()
     }
 
     private fun keywords(keywordStream: Observable<String>): Observable<String> {
-        return keywordStream.map { it.toUpperCase() }
-                .map { it.trim() }
-                .startWith("")
+        return keywordStream.map { it.toUpperCase(Locale.ROOT) }
+            .map { it.trim() }
+            .startWith("")
     }
 
     private fun handleKeyword(keywordStream: Observable<String>): Disposable {
         return Observable.combineLatest(
-                keywords(keywordStream),
-                getUnits(),
-                BiFunction<String, List<String>, List<CurrencyInfo>> { keyword, currencies ->
-                    combine(keyword, currencies)
-                })
-                .subscribe({ currencies.accept(it) }, Timber::e)
+            keywords(keywordStream),
+            getUnits(),
+            BiFunction<String, List<String>, List<CurrencyInfo>> { keyword, currencies ->
+                combine(keyword, currencies)
+            })
+            .subscribe({ currencies.accept(it) }, Timber::e)
     }
 
     private fun combine(keyword: String, currencies: List<String>): List<CurrencyInfo> {
         return currencies.asSequence()
-                .filter { it.contains(keyword) }
-                .map { currencyMapper.toInfo(it) }
-                .toList()
+            .filter { it.contains(keyword) }
+            .map { currencyMapper.toInfo(it) }
+            .toList()
     }
 }

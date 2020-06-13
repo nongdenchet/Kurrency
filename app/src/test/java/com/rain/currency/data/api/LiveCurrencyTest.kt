@@ -7,12 +7,13 @@ import org.junit.Test
 
 class LiveCurrencyTest {
     private val moshi = Moshi.Builder()
-            .build()
+        .build()
 
     @Test
     fun parseModelFromString_shouldReturnLiveCurrency() {
         val adapter = moshi.adapter(LiveCurrency::class.java)
-        val liveCurrency = adapter.fromJson("""
+        val liveCurrency = adapter.fromJson(
+            """
             {
                 "timestamp": 1000,
                 "source": "USD",
@@ -21,18 +22,24 @@ class LiveCurrencyTest {
                     "SGD": 1.368
                 }
             }
-        """)
+        """
+        )
 
-        assertEquals(LiveCurrency(1000, "USD", mapOf(
-                "VND" to 23000.0,
-                "SGD" to 1.368
-        )), liveCurrency)
+        assertEquals(
+            LiveCurrency(
+                1000, "USD", mapOf(
+                    "VND" to 23000.0,
+                    "SGD" to 1.368
+                )
+            ), liveCurrency
+        )
     }
 
     @Test(expected = JsonDataException::class)
     fun parseModelFromString_shouldThrowExceptionWhenMissingSource() {
         val adapter = moshi.adapter(LiveCurrency::class.java)
-        adapter.fromJson("""
+        adapter.fromJson(
+            """
             {
                 "timestamp": 1000,
                 "quotes": {
@@ -40,13 +47,15 @@ class LiveCurrencyTest {
                     "SGD": 1.368
                 }
             }
-        """)
+        """
+        )
     }
 
     @Test(expected = JsonDataException::class)
     fun parseModelFromString_shouldThrowExceptionWhenSourceNull() {
         val adapter = moshi.adapter(LiveCurrency::class.java)
-        adapter.fromJson("""
+        adapter.fromJson(
+            """
             {
                 "timestamp": 1000,
                 "source": null,
@@ -55,6 +64,7 @@ class LiveCurrencyTest {
                     "SGD": 1.368
                 }
             }
-        """)
+        """
+        )
     }
 }

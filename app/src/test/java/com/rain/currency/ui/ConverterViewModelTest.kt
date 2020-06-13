@@ -36,6 +36,7 @@ class ConverterViewModelTest {
 
     @Mock
     private lateinit var currencyRepo: CurrencyRepo
+
     @Mock
     private lateinit var currencyMapper: CurrencyMapper
 
@@ -45,9 +46,9 @@ class ConverterViewModelTest {
         mockSchedulers()
         mockData()
         converterViewModel = ConverterViewModel(
-                ConverterReducer(),
-                ConverterInteractor(currencyRepo),
-                currencyMapper
+            ConverterReducer(),
+            ConverterInteractor(currencyRepo),
+            currencyMapper
         )
     }
 
@@ -65,16 +66,22 @@ class ConverterViewModelTest {
         }
 
         `when`(currencyRepo.fetchLastCurrency()).thenReturn(
-                Single.just(Pair("USD", "VND")).map { Currency(baseUnit = it.first, targetUnit = it.second) })
+            Single.just(Pair("USD", "VND"))
+                .map { Currency(baseUnit = it.first, targetUnit = it.second) })
         `when`(currencyRepo.fetchExchange(ArgumentMatchers.anyBoolean())).thenReturn(
-                Single.just(Exchange(currencies)))
+            Single.just(Exchange(currencies))
+        )
         `when`(currencyMapper.toInfo(ArgumentMatchers.anyString()))
-                .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
+            .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
     }
 
     private fun bind(): ConverterViewModel.Output {
-        return converterViewModel.bind(ConverterViewModel.Input(retryClicks, moneyClicks,
-                baseChange, targetChange, baseUnitChange, targetUnitChange, backClicks))
+        return converterViewModel.bind(
+            ConverterViewModel.Input(
+                retryClicks, moneyClicks,
+                baseChange, targetChange, baseUnitChange, targetUnitChange, backClicks
+            )
+        )
     }
 
     @Test

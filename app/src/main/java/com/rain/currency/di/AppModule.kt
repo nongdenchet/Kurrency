@@ -15,11 +15,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.AndroidInjectionModule
 
-@Module(includes = [
-    AndroidInjectionModule::class,
-    BindingModule::class,
-    CurrencyModule::class
-])
+@Module(
+    includes = [
+        AndroidInjectionModule::class,
+        BindingModule::class,
+        CurrencyModule::class
+    ]
+)
 object AppModule {
 
     @JvmStatic
@@ -27,7 +29,7 @@ object AppModule {
     @ApplicationScope
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
-                .build()
+            .build()
     }
 
     @JvmStatic

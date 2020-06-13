@@ -4,7 +4,10 @@ import com.rain.currency.ui.picker.CurrencyPickerDialog
 import dagger.Component
 
 @CurrencyPickerScope
-@Component(modules = [CurrencyPickerModule::class], dependencies = [CurrencyPickerDependencies::class])
+@Component(
+    modules = [CurrencyPickerModule::class],
+    dependencies = [CurrencyPickerDependencies::class]
+)
 interface CurrencyPickerComponent {
 
     @Component.Builder

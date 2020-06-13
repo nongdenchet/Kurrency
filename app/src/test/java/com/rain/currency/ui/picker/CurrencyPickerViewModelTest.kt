@@ -22,6 +22,7 @@ class CurrencyPickerViewModelTest {
 
     @Mock
     lateinit var currencyRepo: CurrencyRepo
+
     @Mock
     lateinit var currencyMapper: CurrencyMapper
 
@@ -36,9 +37,10 @@ class CurrencyPickerViewModelTest {
         }
 
         `when`(currencyRepo.fetchExchange(ArgumentMatchers.anyBoolean())).thenReturn(
-                Single.just(Exchange(currencies)))
+            Single.just(Exchange(currencies))
+        )
         `when`(currencyMapper.toInfo(ArgumentMatchers.anyString()))
-                .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
+            .thenAnswer { CurrencyInfo(it.arguments[0] as String, "$", 0) }
 
         viewModel = CurrencyPickerViewModel(currencyRepo, currencyMapper)
     }
@@ -47,9 +49,9 @@ class CurrencyPickerViewModelTest {
     fun shouldEmitFullList() {
         val output = bind(CurrencyType.BASE)
         output.currencies
-                .test()
-                .assertValue { it.size == 3 }
-                .dispose()
+            .test()
+            .assertValue { it.size == 3 }
+            .dispose()
     }
 
     @Test
@@ -57,9 +59,9 @@ class CurrencyPickerViewModelTest {
         val output = bind(CurrencyType.BASE)
         keyword.accept("")
         output.currencies
-                .test()
-                .assertValue { it.size == 3 }
-                .dispose()
+            .test()
+            .assertValue { it.size == 3 }
+            .dispose()
     }
 
     @Test
@@ -67,9 +69,9 @@ class CurrencyPickerViewModelTest {
         val output = bind(CurrencyType.BASE)
         keyword.accept("vng")
         output.currencies
-                .test()
-                .assertValue { it.isEmpty() }
-                .dispose()
+            .test()
+            .assertValue { it.isEmpty() }
+            .dispose()
     }
 
     @Test
@@ -77,9 +79,9 @@ class CurrencyPickerViewModelTest {
         val output = bind(CurrencyType.BASE)
         keyword.accept("usd")
         output.currencies
-                .test()
-                .assertValue { it.size == 1 }
-                .dispose()
+            .test()
+            .assertValue { it.size == 1 }
+            .dispose()
     }
 
     @Test

@@ -20,34 +20,34 @@ object CurrencyModule {
     @Provides
     @ApplicationScope
     fun provideCurrencyStore(
-            moshi: Moshi,
-            context: Context,
-            sharedPreferences: SharedPreferences
+        moshi: Moshi,
+        context: Context,
+        sharedPreferences: SharedPreferences
     ) = CurrencyStore(
-            moshi,
-            context,
-            sharedPreferences
+        moshi,
+        context,
+        sharedPreferences
     )
 
     @JvmStatic
     @Provides
     @ApplicationScope
     fun provideCurrencyMapper(
-            context: Context,
-            moshi: Moshi,
-            assetLoader: AssetLoader
+        context: Context,
+        moshi: Moshi,
+        assetLoader: AssetLoader
     ) = CurrencyMapper(context, moshi, assetLoader)
 
     @JvmStatic
     @Provides
     @ApplicationScope
     fun provideCurrencyRepo(
-            networkManager: NetworkManager,
-            currencyApi: CurrencyApi,
-            currencyStore: CurrencyStore
+        networkManager: NetworkManager,
+        currencyApi: CurrencyApi,
+        currencyStore: CurrencyStore
     ) = CurrencyRepo(
-            networkManager,
-            currencyApi,
-            currencyStore
+        networkManager,
+        currencyApi,
+        currencyStore
     )
 }

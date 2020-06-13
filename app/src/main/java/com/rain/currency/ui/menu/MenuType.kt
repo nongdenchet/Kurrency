@@ -5,7 +5,7 @@ enum class MenuType {
 
     override fun toString(): String {
         return super.toString()
-                .toLowerCase()
-                .capitalize()
+            .toLowerCase()
+            .capitalize()
     }
 }

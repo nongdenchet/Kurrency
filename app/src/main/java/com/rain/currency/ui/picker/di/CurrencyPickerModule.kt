@@ -14,8 +14,8 @@ object CurrencyPickerModule {
     @Provides
     @CurrencyPickerScope
     fun provideCurrencyPickerViewModel(
-            currencyRepo: CurrencyRepo,
-            currencyMapper: CurrencyMapper
+        currencyRepo: CurrencyRepo,
+        currencyMapper: CurrencyMapper
     ) = CurrencyPickerViewModel(currencyRepo, currencyMapper)
 
     @JvmStatic

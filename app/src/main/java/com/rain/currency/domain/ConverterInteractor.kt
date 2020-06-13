@@ -16,13 +16,13 @@ class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
 
     fun fetchCurrency(): Observable<ConverterCommand> {
         return Single.zip(currencyRepo.fetchExchange(), currencyRepo.fetchLastCurrency(),
-                BiFunction<Exchange, Currency, ConverterData> { exchange, currency ->
-                    ConverterData(exchange, currency)
-                })
-                .toObservable()
-                .map<ConverterCommand> { ConverterCommand.CurrencyContent(it) }
-                .startWith(ConverterCommand.CurrencyLoading())
-                .onErrorReturn { ConverterCommand.CurrencyError(it) }
+            BiFunction<Exchange, Currency, ConverterData> { exchange, currency ->
+                ConverterData(exchange, currency)
+            })
+            .toObservable()
+            .map<ConverterCommand> { ConverterCommand.CurrencyContent(it) }
+            .startWith(ConverterCommand.CurrencyLoading())
+            .onErrorReturn { ConverterCommand.CurrencyError(it) }
     }
 
     fun convertTargetValue(value: String, data: ConverterData): Single<ConverterCommand> {
@@ -45,8 +45,8 @@ class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
             return@fromCallable data
         }
         return single.observeOn(Schedulers.io())
-                .doOnSuccess { currencyRepo.storeTargetUnit(it.currency.targetUnit) }
-                .map { ConverterCommand.CurrencyResult(it) }
+            .doOnSuccess { currencyRepo.storeTargetUnit(it.currency.targetUnit) }
+            .map { ConverterCommand.CurrencyResult(it) }
     }
 
     private fun convertTarget(value: String, unit: String, data: ConverterData): ConverterData? {
@@ -57,7 +57,11 @@ class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
             exchange.currencies[currency.baseUnit]?.let { basePrice ->
                 val result = parseNumber(value) * targetPrice / basePrice
                 val newCurrency = when {
-                    result > 0 -> currency.copy(base = formatValue(result), target = value, targetUnit = unit)
+                    result > 0 -> currency.copy(
+                        base = formatValue(result),
+                        target = value,
+                        targetUnit = unit
+                    )
                     result == 0.0 -> currency.copy(base = "0", target = value, targetUnit = unit)
                     else -> currency.copy(base = "", target = value, targetUnit = unit)
                 }
@@ -86,8 +90,8 @@ class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
             return@fromCallable data
         }
         return single.observeOn(Schedulers.io())
-                .doOnSuccess { currencyRepo.storeBaseUnit(it.currency.baseUnit) }
-                .map { ConverterCommand.CurrencyResult(it) }
+            .doOnSuccess { currencyRepo.storeBaseUnit(it.currency.baseUnit) }
+            .map { ConverterCommand.CurrencyResult(it) }
     }
 
     private fun convertBase(value: String, unit: String, data: ConverterData): ConverterData? {
@@ -98,7 +102,11 @@ class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
             exchange.currencies[currency.targetUnit]?.let { targetPrice ->
                 val result = parseNumber(value) * basePrice / targetPrice
                 val newCurrency = when {
-                    result > 0 -> currency.copy(base = value, target = formatValue(result), baseUnit = unit)
+                    result > 0 -> currency.copy(
+                        base = value,
+                        target = formatValue(result),
+                        baseUnit = unit
+                    )
                     result == 0.0 -> currency.copy(base = value, target = "0", baseUnit = unit)
                     else -> currency.copy(base = value, target = "", baseUnit = unit)
                 }
@@ -112,7 +120,7 @@ class ConverterInteractor(private val currencyRepo: CurrencyRepo) {
 
     private fun parseNumber(value: String): Double {
         return try {
-            numberFormatter.parse(value).toString()
+            numberFormatter.parse(value)!!.toString()
         } catch (e: Exception) {
             Timber.e(e)
             ""

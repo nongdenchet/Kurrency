@@ -10,7 +10,10 @@ import com.rain.currency.ui.menu.MenuType
 import java.lang.Exception
 import java.text.NumberFormat
 
-class PasteStrategy(private val clipboardManager: ClipboardManager, private val editText: EditText) : MenuStrategy {
+class PasteStrategy(
+    private val clipboardManager: ClipboardManager,
+    private val editText: EditText
+) : MenuStrategy {
     private val numberFormatter = NumberFormat.getNumberInstance()
 
     override fun menuType() = MenuType.PASTE
@@ -34,7 +37,11 @@ class PasteStrategy(private val clipboardManager: ClipboardManager, private val 
                     editText.setSelection(it.length)
                 } catch (e: Exception) {
                     val context = editText.context
-                    val toast = Toast.makeText(context, context.getString(R.string.invalid_amount), Toast.LENGTH_LONG)
+                    val toast = Toast.makeText(
+                        context,
+                        context.getString(R.string.invalid_amount),
+                        Toast.LENGTH_LONG
+                    )
                     toast.setGravity(Gravity.TOP, 0, 0)
                     toast.show()
                 }

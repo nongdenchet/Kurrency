@@ -77,7 +77,6 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         }
     }
 
-
     protected open fun getInitPosition(): Point {
         return Point(0, 0)
     }
@@ -137,17 +136,17 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         val screenSize = getScreenSize(windowManager)
         val params = window.layoutParams as WindowManager.LayoutParams
         updatePosition(
-                if (x > screenSize.widthPixels / 2) screenSize.widthPixels else 0,
-                params.y
+            if (x > screenSize.widthPixels / 2) screenSize.widthPixels else 0,
+            params.y
         )
     }
 
     private fun updatePosition(x: Int, y: Int) {
         val params = (window.layoutParams as WindowManager.LayoutParams)
-                .apply {
-                    this.x = x
-                    this.y = y
-                }
+            .apply {
+                this.x = x
+                this.y = y
+            }
         windowManager.updateViewLayout(window, params)
     }
 
@@ -156,8 +155,8 @@ abstract class OverlayService : Service(), View.OnTouchListener {
         val screenSize = getScreenSize(windowManager)
         val params = window.layoutParams as WindowManager.LayoutParams
         updatePosition(
-                if (params.x > screenSize.heightPixels / 2) screenSize.widthPixels else 0,
-                getInitPosition().y
+            if (params.x > screenSize.heightPixels / 2) screenSize.widthPixels else 0,
+            getInitPosition().y
         )
     }
 }

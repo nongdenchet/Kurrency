@@ -35,8 +35,8 @@ object NetworkModule {
         builder.networkInterceptors().add(cacheInterceptor(networkManager))
 
         return builder.addInterceptor(accessTokenInterceptor())
-                .cache(getCache(context.cacheDir))
-                .build()
+            .cache(getCache(context.cacheDir))
+            .build()
     }
 
     private fun getCache(cacheDir: File): Cache {
@@ -48,15 +48,15 @@ object NetworkModule {
     private fun accessTokenInterceptor(): Interceptor {
         return Interceptor {
             val url = it.request()
-                    .url()
-                    .newBuilder()
-                    .addQueryParameter(Constant.ACCESS_TOKEN, BuildConfig.ACCESS_TOKEN)
-                    .build()
+                .url()
+                .newBuilder()
+                .addQueryParameter(Constant.ACCESS_TOKEN, BuildConfig.ACCESS_TOKEN)
+                .build()
 
             val request = it.request()
-                    .newBuilder()
-                    .url(url)
-                    .build()
+                .newBuilder()
+                .url(url)
+                .build()
 
             return@Interceptor it.proceed(request)
         }
@@ -69,12 +69,12 @@ object NetworkModule {
 
             return@Interceptor if (networkManager.isNetworkAvailable()) {
                 originalResponse.newBuilder()
-                        .header("Cache-Control", "public, max-age=$maxAge")
-                        .build()
+                    .header("Cache-Control", "public, max-age=$maxAge")
+                    .build()
             } else {
                 originalResponse.newBuilder()
-                        .header("Cache-Control", "public, only-if-cached, max-stale=$maxAge")
-                        .build()
+                    .header("Cache-Control", "public, only-if-cached, max-stale=$maxAge")
+                    .build()
             }
         }
     }
@@ -84,11 +84,11 @@ object NetworkModule {
     @ApplicationScope
     fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_URL)
-                .client(okHttpClient)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
+            .baseUrl(BuildConfig.BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
     }
 
     @JvmStatic
