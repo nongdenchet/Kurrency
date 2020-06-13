@@ -11,6 +11,6 @@ class CopyStrategy(private val clipboardManager: ClipboardManager, private val e
 
     override fun execute() {
         editText.requestFocus()
-        clipboardManager.primaryClip = ClipData.newPlainText(MenuType.COPY.name, editText.text)
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(MenuType.COPY.name, editText.text))
     }
 }

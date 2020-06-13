@@ -88,7 +88,7 @@ class ConverterServiceTest {
         onView(withId(R.id.btnMoney))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
-        onView(withId(R.id.content))
+        onView(withId(R.id.container))
                 .inRoot(withDecorView(not(`is`(decorView))))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
