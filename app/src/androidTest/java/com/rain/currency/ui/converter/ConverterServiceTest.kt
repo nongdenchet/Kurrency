@@ -87,7 +87,7 @@ class ConverterServiceTest {
     fun firstOpenShouldExpand() {
         onView(withId(R.id.btnMoney))
             .inRoot(withDecorView(not(`is`(decorView))))
-            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
         onView(withId(R.id.container))
             .inRoot(withDecorView(not(`is`(decorView))))
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
