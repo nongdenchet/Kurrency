@@ -8,5 +8,5 @@
 /app/prod/release
 /captures
 .externalNativeBuild
-*/google-services.json
+**/google-services.json
 release.keystore
