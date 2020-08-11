@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "530078776560",
+    "firebase_url": "https://kurrency-nonprod.firebaseio.com",
+    "project_id": "kurrency-nonprod",
+    "storage_bucket": "kurrency-nonprod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530078776560:android:7237a6ffaca6e9c3e25635",
+        "android_client_info": {
+          "package_name": "com.rain.currency.staging"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "530078776560-qhr5lb4lqd53s51q9offv9b04pothhr4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rain.currency.staging",
+            "certificate_hash": "fcd72474e379cf1780424a7487f808300c068f0e"
+          }
+        },
+        {
+          "client_id": "530078776560-t20l9v0tlos9daiaud17ud3vuf6kuohs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlJ-_cCmIodlwlWmBPJi7tPPqFP32A2Kw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "530078776560-t20l9v0tlos9daiaud17ud3vuf6kuohs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
